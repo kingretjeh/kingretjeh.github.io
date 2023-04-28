@@ -10,7 +10,7 @@ let config = {
     },
     {
       "Title": "Take Free",
-      "URL": "https://kingretjeh.github.io/404.html",
+      "URL": "https://fahrihosting.me/canva.txt",
       "icon_classes": "fa fa-link"
     },
     {
