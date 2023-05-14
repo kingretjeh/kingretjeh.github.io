@@ -10,7 +10,7 @@ let config = {
     },
     {
       "Title": "Take Free",
-      "URL": "https://fahrihosting.me/canva.txt",
+      "URL": "https://www.canva.com/brand/join?token=pzcKNeKWuCMHx8derBNxiA&referrer=team-invite",
       "icon_classes": "fa fa-link"
     },
     {
