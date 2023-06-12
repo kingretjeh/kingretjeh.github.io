@@ -18,5 +18,10 @@ let config = {
       "URL": "https://sociabuzz.com/kingretjeh/support",
       "icon_classes": "fa fa-gift"
     },
+    {
+      "Title": "Community",
+      "URL": "https://discord.gg/dM6aVcSB7y",
+      "icon_classes": "fa-brands fa-discord"
+    },
   ]
 }
