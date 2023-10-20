@@ -4,8 +4,8 @@ let config = {
   "Description": "xixixixixixixi",
   "links": [
     {
-      "Title": "TOPUP MURAH",
-      "URL": "http://sitopup.my.id",
+      "Title": "WEBSITE",
+      "URL": "http://kingretjeh.github.io",
       "icon_classes": "fa fa-globe",
     },
     {
