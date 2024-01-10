@@ -9,8 +9,8 @@ let config = {
       "icon_classes": "fa fa-globe",
     },
     {
-      "Title": "Canva Oktober",
-      "URL": "https://www.canva.com/brand/join?token=HIh3Vg-wDQcJBmeSzlAzew&referrer=team-invite",
+      "Title": "Canva Januari",
+      "URL": "https://www.canva.com/brand/join?token=WJIMt7Ng2F3Fg-9otdu9Gg&referrer=team-invite",
       "icon_classes": "fa fa-link"
     },
     {
