@@ -4,8 +4,8 @@ let config = {
   "Description": "xixixixixixixi",
   "links": [
     {
-      "Title": "WEBSITE",
-      "URL": "http://kingretjeh.github.io",
+      "Title": "TOPUP GAME OTOMATIS",
+      "URL": "http://auto.topup.cab",
       "icon_classes": "fa fa-globe",
     },
     {
