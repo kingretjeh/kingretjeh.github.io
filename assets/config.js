@@ -4,7 +4,7 @@ let config = {
   "Description": "xixixixixixixi",
   "links": [
     {
-      "Title": "TOPUP GAME OTOMATIS",
+      "Title": "TOPUP GAMES",
       "URL": "http://auto.topup.cab",
       "icon_classes": "fa fa-globe",
     },
