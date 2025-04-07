@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Management Trading Crypto</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            font-size: 28px;
+        }
+        
+        .input-section {
+            background-color: #e8f4fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .min-info {
+            text-align: right;
+            font-size: 12px;
+            margin-bottom: 15px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .input-group {
+            margin-bottom: 5px;
+        }
+        
+        .input-label {
+            font-weight: 600;
+            padding: 8px 0;
+            color: #2c3e50;
+            display: block;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: right;
+            box-sizing: border-box;
+            font-size: 15px;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .green-bg {
+            background-color: #e8f5e9;
+        }
+        
+        .bright-green-bg {
+            background-color: #c8e6c9;
+        }
+        
+        .blue-bg {
+            background-color: #e3f2fd;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f1f8fe;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .buy-row {
+            background-color: #e8f5e9;
+        }
+        
+        .sell-row {
+            background-color: #ffebee;
+        }
+        
+        .summary-row {
+            background-color: #fff8e1;
+            font-weight: bold;
+        }
+        
+        .notes {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border-left: 3px solid #bdc3c7;
+        }
+        
+        .percent-container {
+            position: relative;
+        }
+        
+        .percent-sign {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            color: #7f8c8d;
+        }
+        
+        .risk-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+        
+        .risk-low {
+            color: #27ae60;
+        }
+        
+        .risk-medium {
+            color: #f39c12;
+        }
+        
+        .risk-high {
+            color: #e74c3c;
+        }
+        
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .strategy-selector {
+            margin-bottom: 20px;
+        }
+        
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            background: #f1f1f1;
+            border: none;
+            cursor: pointer;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .tab-button.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-top: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Money Management untuk Trading Crypto</h1>
+        
+        <div class="strategy-selector">
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="openTab(event, 'averagingTab')">Strategi Averaging</button>
+                    <button class="tab-button" onclick="openTab(event, 'singleTab')">Strategi Single Entry</button>
+                </div>
+            </div>
+            
+            <div id="averagingTab" class="tab-content active">
+                <div class="input-section">
+                    <div class="min-info">Modal minimum Rp 100.000</div>
+                    
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label class="input-label">Total Modal (IDR)</label>
+                            <input type="number" id="totalModal" class="green-bg" value="100000" min="100000">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Harga Coin Saat Ini (IDR)</label>
+                            <input type="number" id="hargaCoin" class="green-bg" value="" min="1">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Target Profit (%)</label>
+                            <div class="percent-container">
+                                <input type="number" id="targetProfit" class="bright-green-bg" value="" min="1" max="500">
+                                <span class="percent-sign">%</span>
+                            </div>
+                            <div class="risk-indicator">
+                                <span class="risk-low">Rendah (5-20%)</span>
+                                <span class="risk-medium">Sedang (20-50%)</span>
+                                <span class="risk-high">Tinggi (>50%)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Risk Tolerance</label>
+                            <select id="riskTolerance" class="blue-bg">
+                                <option value="low">Rendah</option>
+                                <option value="medium" selected>Sedang</option>
+                                <option value="high">Tinggi</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tabel posisi Buy -->
+                <div class="table-responsive">
+                    <table id="buyTable">
+                        <thead>
+                            <tr>
+                                <th>Level Entry</th>
+                                <th>Harga Beli (IDR)</th>
+                                <th>Alokasi Modal (IDR)</th>
+                                <th>% dari Total</th>
+                                <th>Jumlah Coin</th>
+                            </tr>
+                        </thead>
+                        <tbody id="buyTableBody">
+                            <!-- Data akan diisi oleh JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Tabel posisi Sell -->
+                <div class="table-responsive">
+                    <table id="sellTable">
+                        <thead>
+                            <tr>
+                                <th>Level Exit</th>
+                                <th>Harga Jual (IDR)</th>
+                                <th>Profit per Level (IDR)</th>
+                                <th>% Profit</th>
+                                <th>Akumulasi Profit</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sellTableBody">
+                            <!-- Data akan diisi oleh JavaScript -->
+                        </tbody>
+                        <tfoot>
+                            <tr class="summary-row">
+                                <td colspan="2">Total</td>
+                                <td id="totalProfit">-</td>
+                                <td id="totalProfitPercent">-</td>
+                                <td id="finalAmount">-</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                
+                <div class="notes">
+                    <h3>Catatan Penting:</h3>
+                    <p><strong>1. Strategi Averaging:</strong> Modul ini menggunakan strategi averaging dengan pembagian modal bertahap. Ini mengurangi risiko dengan membeli pada level-level harga yang berbeda.</p>
+                    <p><strong>2. Money Management:</strong> Alokasi modal disesuaikan dengan toleransi risiko. Risiko rendah berarti alokasi lebih besar di level awal, risiko tinggi berarti alokasi lebih besar di level-level bawah.</p>
+                    <p><strong>3. Target Profit:</strong> Target profit yang realistis untuk crypto biasanya antara 20-50%. Target di atas 50% termasuk tinggi risiko.</p>
+                    <p><strong>4. Volatilitas:</strong> Crypto sangat volatil. Selalu gunakan stop loss dan jangan investasikan uang yang tidak bisa Anda tanggung kehilangannya.</p>
+                </div>
+            </div>
+            
+            <div id="singleTab" class="tab-content">
+                <div class="input-section">
+                    <div class="min-info">Modal minimum Rp 100.000</div>
+                    
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label class="input-label">Total Modal (IDR)</label>
+                            <input type="number" id="singleTotalModal" class="green-bg" value="100000" min="100000">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Harga Beli (IDR)</label>
+                            <input type="number" id="singleHargaBeli" class="green-bg" value="" min="1">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Target Profit (%)</label>
+                            <div class="percent-container">
+                                <input type="number" id="singleTargetProfit" class="bright-green-bg" value="" min="1" max="500">
+                                <span class="percent-sign">%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Stop Loss (%)</label>
+                            <div class="percent-container">
+                                <input type="number" id="singleStopLoss" class="bright-green-bg" value="" min="1" max="100">
+                                <span class="percent-sign">%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table id="singleEntryTable">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Nilai</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Jumlah Coin yang Dibeli</td>
+                                <td id="singleCoinAmount">-</td>
+                            </tr>
+                            <tr>
+                                <td>Harga Jual Target</td>
+                                <td id="singleHargaJual">-</td>
+                            </tr>
+                            <tr>
+                                <td>Harga Stop Loss</td>
+                                <td id="singleHargaStopLoss">-</td>
+                            </tr>
+                            <tr>
+                                <td>Potensi Profit</td>
+                                <td id="singlePotentialProfit">-</td>
+                            </tr>
+                            <tr>
+                                <td>Potensi Kerugian</td>
+                                <td id="singlePotentialLoss">-</td>
+                            </tr>
+                            <tr class="summary-row">
+                                <td>Risk-Reward Ratio</td>
+                                <td id="singleRiskReward">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="notes">
+                    <h3>Catatan Strategi Single Entry:</h3>
+                    <p><strong>1. Entry Tunggal:</strong> Strategi ini menggunakan satu entry point dengan target profit dan stop loss yang jelas.</p>
+                    <p><strong>2. Risk-Reward Ratio:</strong> Selalu usahakan risk-reward ratio minimal 1:2. Artinya potensi profit harus minimal 2x dari potensi loss.</p>
+                    <p><strong>3. Stop Loss:</strong> Sangat penting dalam strategi ini. Stop loss harus ditentukan sebelum entry dan harus dipatuhi.</p>
+                    <p><strong>4. Manajemen Modal:</strong> Jangan gunakan lebih dari 5-10% modal untuk satu trade dalam strategi ini.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Mendapatkan referensi ke elemen-elemen input
+        const totalModalInput = document.getElementById('totalModal');
+        const hargaCoinInput = document.getElementById('hargaCoin');
+        const targetProfitInput = document.getElementById('targetProfit');
+        const riskToleranceSelect = document.getElementById('riskTolerance');
+        
+        // Input untuk single entry
+        const singleTotalModalInput = document.getElementById('singleTotalModal');
+        const singleHargaBeliInput = document.getElementById('singleHargaBeli');
+        const singleTargetProfitInput = document.getElementById('singleTargetProfit');
+        const singleStopLossInput = document.getElementById('singleStopLoss');
+        
+        // Mendapatkan referensi ke tabel
+        const buyTableBody = document.getElementById('buyTableBody');
+        const sellTableBody = document.getElementById('sellTableBody');
+        
+        // Fungsi untuk membuka tab
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            const tabButtons = document.getElementsByClassName('tab-button');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+            
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+            
+            if (tabName === 'averagingTab') {
+                updateAveragingTables();
+            } else {
+                updateSingleEntryTable();
+            }
+        }
+        
+        // Fungsi untuk menghitung dan memperbarui tabel averaging
+        function updateAveragingTables() {
+            const totalModal = parseFloat(totalModalInput.value) || 5000000;
+            const hargaCoin = parseFloat(hargaCoinInput.value) || 13000000;
+            const targetProfit = parseFloat(targetProfitInput.value) || 30;
+            const riskTolerance = riskToleranceSelect.value;
+            
+            // Validasi input
+            if (totalModal < 100000) {
+                alert('Modal minimum adalah Rp 100.000');
+                totalModalInput.value = 100000;
+                return;
+            }
+            
+            if (hargaCoin <= 0) {
+                alert('Harga coin harus lebih dari 0');
+                hargaCoinInput.value = 13000000;
+                return;
+            }
+            
+            if (targetProfit <= 0 || targetProfit > 500) {
+                alert('Target profit harus antara 1% - 500%');
+                targetProfitInput.value = 30;
+                return;
+            }
+            
+            // Bersihkan tabel
+            buyTableBody.innerHTML = '';
+            sellTableBody.innerHTML = '';
+            
+            // Hitung posisi Buy berdasarkan risk tolerance
+            const buyPositions = hitungPosisiBuy(totalModal, hargaCoin, riskTolerance);
+            
+            // Isi tabel Buy
+            let totalCoin = 0;
+            buyPositions.forEach(pos => {
+                const row = document.createElement('tr');
+                row.className = 'buy-row';
+                
+                const coinAmount = pos.modal / pos.hargaCoin;
+                totalCoin += coinAmount;
+                
+                row.innerHTML = `
+                    <td>Level ${pos.level}</td>
+                    <td>${formatIDR(pos.hargaCoin)}</td>
+                    <td>${formatIDR(pos.modal)}</td>
+                    <td>${pos.percentage}%</td>
+                    <td>${coinAmount.toFixed(6)}</td>
+                `;
+                
+                buyTableBody.appendChild(row);
+            });
+            
+            // Hitung posisi Sell
+            const sellPositions = hitungPosisiSell(buyPositions, totalModal, hargaCoin, targetProfit);
+            
+            // Isi tabel Sell
+            let totalProfit = 0;
+            sellPositions.forEach(pos => {
+                const row = document.createElement('tr');
+                row.className = 'sell-row';
+                
+                totalProfit += pos.profit;
+                const profitPercentage = (pos.profit / totalModal) * 100;
+                const accumulatedPercentage = (totalProfit / totalModal) * 100;
+                
+                row.innerHTML = `
+                    <td>Exit ${pos.level}</td>
+                    <td>${formatIDR(pos.hargaCoin)}</td>
+                    <td>${formatIDR(pos.profit)}</td>
+                    <td>${profitPercentage.toFixed(2)}%</td>
+                    <td>${formatIDR(totalProfit)} (${accumulatedPercentage.toFixed(2)}%)</td>
+                `;
+                
+                sellTableBody.appendChild(row);
+            });
+            
+            // Update summary
+            document.getElementById('totalProfit').textContent = formatIDR(totalProfit);
+            document.getElementById('totalProfitPercent').textContent = ((totalProfit / totalModal) * 100).toFixed(2) + '%';
+            document.getElementById('finalAmount').textContent = formatIDR(totalModal + totalProfit);
+        }
+        
+        // Fungsi untuk menghitung posisi Buy dengan risk tolerance
+        function hitungPosisiBuy(totalModal, hargaCoin, riskTolerance) {
+            const positions = [];
+            const levels = 5;
+            
+            // Penurunan harga untuk setiap level (dalam persen)
+            let penurunanPerLevel;
+            let alokasiModal;
+            
+            // Sesuaikan strategi berdasarkan risk tolerance
+            if (riskTolerance === 'low') {
+                // Untuk risiko rendah, lebih banyak alokasi di level awal
+                penurunanPerLevel = [0, 5, 15, 30, 50];
+                alokasiModal = [40, 30, 15, 10, 5]; // total 100%
+            } else if (riskTolerance === 'high') {
+                // Untuk risiko tinggi, lebih banyak alokasi di level bawah
+                penurunanPerLevel = [0, 10, 25, 40, 60];
+                alokasiModal = [10, 20, 30, 25, 15]; // total 100%
+            } else {
+                // Default medium risk
+                penurunanPerLevel = [0, 8, 20, 35, 55];
+                alokasiModal = [25, 25, 20, 20, 10]; // total 100%
+            }
+            
+            for (let i = 0; i < levels; i++) {
+                const hargaBeli = hargaCoin * (1 - penurunanPerLevel[i] / 100);
+                const modalLevel = (totalModal * alokasiModal[i]) / 100;
+                
+                positions.push({
+                    level: i + 1,
+                    hargaCoin: Math.round(hargaBeli),
+                    modal: Math.round(modalLevel),
+                    percentage: alokasiModal[i]
+                });
+            }
+            
+            return positions;
+        }
+        
+        // Fungsi untuk menghitung posisi Sell
+        function hitungPosisiSell(buyPositions, totalModal, hargaCoin, targetProfit) {
+            const positions = [];
+            const levels = 5;
+            
+            // Hitung total modal yang digunakan
+            const totalModalUsed = buyPositions.reduce((acc, pos) => acc + pos.modal, 0);
+            
+            // Distribusi profit untuk setiap level
+            // Level awal mengambil profit lebih besar
+            const profitDistribution = [40, 30, 15, 10, 5]; // total 100%
+            
+            for (let i = 0; i < levels; i++) {
+                const profitTarget = (targetProfit / 100) * totalModalUsed * (profitDistribution[i] / 100);
+                const hargaJual = buyPositions[i].hargaCoin * (1 + (targetProfit / 100));
+                
+                positions.push({
+                    level: i + 1,
+                    hargaCoin: Math.round(hargaJual),
+                    profit: Math.round(profitTarget)
+                });
+            }
+            
+            return positions;
+        }
+        
+        // Fungsi untuk update single entry table
+        function updateSingleEntryTable() {
+            const totalModal = parseFloat(singleTotalModalInput.value) || 5000000;
+            const hargaBeli = parseFloat(singleHargaBeliInput.value) || 13000000;
+            const targetProfit = parseFloat(singleTargetProfitInput.value) || 30;
+            const stopLoss = parseFloat(singleStopLossInput.value) || 10;
+            
+            // Validasi input
+            if (totalModal < 100000) {
+                alert('Modal minimum adalah Rp 100.000');
+                singleTotalModalInput.value = 100000;
+                return;
+            }
+            
+            if (hargaBeli <= 0) {
+                alert('Harga beli harus lebih dari 0');
+                singleHargaBeliInput.value = 13000000;
+                return;
+            }
+            
+            if (targetProfit <= 0 || targetProfit > 500) {
+                alert('Target profit harus antara 1% - 500%');
+                singleTargetProfitInput.value = 30;
+                return;
+            }
+            
+            if (stopLoss <= 0 || stopLoss > 100) {
+                alert('Stop loss harus antara 1% - 100%');
+                singleStopLossInput.value = 10;
+                return;
+            }
+            
+            // Hitung jumlah coin
+            const coinAmount = totalModal / hargaBeli;
+            
+            // Hitung harga jual dan stop loss
+            const hargaJual = hargaBeli * (1 + targetProfit / 100);
+            const hargaStopLoss = hargaBeli * (1 - stopLoss / 100);
+            
+            // Hitung potensi profit dan loss
+            const potentialProfit = (hargaJual - hargaBeli) * coinAmount;
+            const potentialLoss = (hargaBeli - hargaStopLoss) * coinAmount;
+            
+            // Hitung risk-reward ratio
+            const riskRewardRatio = potentialProfit / potentialLoss;
+            
+            // Update tabel
+            document.getElementById('singleCoinAmount').textContent = coinAmount.toFixed(6);
+            document.getElementById('singleHargaJual').textContent = formatIDR(hargaJual);
+            document.getElementById('singleHargaStopLoss').textContent = formatIDR(hargaStopLoss);
+            document.getElementById('singlePotentialProfit').textContent = formatIDR(potentialProfit) + 
+                ` (${targetProfit}%)`;
+            document.getElementById('singlePotentialLoss').textContent = formatIDR(potentialLoss) + 
+                ` (${stopLoss}%)`;
+            document.getElementById('singleRiskReward').textContent = riskRewardRatio.toFixed(2) + 
+                ` (${riskRewardRatio >= 2 ? 'Baik' : riskRewardRatio >= 1 ? 'Cukup' : 'Buruk'})`;
+        }
+        
+        // Format angka ke format IDR
+        function formatIDR(number) {
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(number);
+        }
+        
+        // Event listener untuk input
+        totalModalInput.addEventListener('input', updateAveragingTables);
+        hargaCoinInput.addEventListener('input', updateAveragingTables);
+        targetProfitInput.addEventListener('input', updateAveragingTables);
+        riskToleranceSelect.addEventListener('change', updateAveragingTables);
+        
+        // Event listener untuk single entry
+        singleTotalModalInput.addEventListener('input', updateSingleEntryTable);
+        singleHargaBeliInput.addEventListener('input', updateSingleEntryTable);
+        singleTargetProfitInput.addEventListener('input', updateSingleEntryTable);
+        singleStopLossInput.addEventListener('input', updateSingleEntryTable);
+        
+        // Jalankan perhitungan awal
+        updateAveragingTables();
+        updateSingleEntryTable();
+    </script>
+</body>
+</html>
