@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricelist Pro - Paket Data (Dinamis)</title>
+
+    <!-- Memuat Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Memuat Google Font (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Ikon untuk tab browser (Icon Sinyal) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📶</text></svg>">
+
+    <style>
+        /* Menerapkan font Inter sebagai font default */
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* bg-slate-100 */
+        }
+        
+        /* Style untuk tombol filter */
+        .filter-btn {
+            transition: all 0.3s ease;
+            border: 1px solid #cbd5e1; /* border-slate-300 */
+        }
+        
+        /* Style untuk tombol filter AKTIF */
+        .filter-btn.active {
+            background-color: #0c4a6e; /* bg-sky-800 */
+            color: #ffffff;
+            border-color: #0c4a6e; /* border-sky-800 */
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Style untuk tombol paginasi */
+        .page-btn {
+            background-color: #0ea5e9; /* bg-sky-500 */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            font-weight: 600; /* font-semibold */
+            transition: all 0.3s ease;
+        }
+        .page-btn:hover {
+            background-color: #0284c7; /* hover:bg-sky-600 */
+        }
+        
+        /* Style untuk tombol paginasi NONAKTIF */
+        .page-btn:disabled {
+            background-color: #cbd5e1; /* bg-slate-300 */
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Animasi kartu */
+        .card-enter {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        /* CSS untuk status "Close" */
+        .data-card[data-status="close"] .card-content {
+            opacity: 0.75;
+            background-color: #f8fafc; /* bg-slate-50 */
+        }
+        
+        .data-card[data-status="close"] .btn-buy {
+            background-color: #9ca3af; /* bg-gray-400 */
+            cursor: not-allowed;
+            pointer-events: none; /* Mencegah klik & event modal */
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .data-card[data-status="close"] .card-content:hover {
+            transform: scale(1); /* Matikan scale */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Shadow normal */
+            border-color: transparent; /* Matikan border hover */
+        }
+        
+        /* Animasi Loading */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #0ea5e9;
+            animation: spin 1s ease infinite;
+            margin: 0 auto; /* Center */
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- 
+      HEADER MODERN (Glassmorphism)
+    -->
+    <header class="bg-white/75 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-slate-200">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <svg class="h-8 w-8 text-sky-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <span class="text-2xl font-bold tracking-tight text-slate-900">KiosData</span>
+            </div>
+            <!-- Tombol Kontak -->
+            <a href="#" id="wa-contact-header" class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-300 text-sm sm:text-base shadow-md hover:shadow-lg">
+                Hubungi Kami
+            </a>
+        </nav>
+    </header>
+
+    <!-- Konten Utama -->
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- Judul Halaman -->
+        <div class="text-center mb-8 sm:mb-12">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
+                Pricelist Paket Data
+            </h1>
+            <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">
+                Temukan paket data terbaik untuk kebutuhanmu. Cepat, murah, dan terpercaya.
+            </p>
+        </div>
+
+        <!-- FITUR: Search Bar -->
+        <div class="mb-8 max-w-2xl mx-auto">
+            <label for="search-bar" class="sr-only">Cari paket data...</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+                </div>
+                <input type="search" id="search-bar"
+                       class="block w-full py-3 pl-12 pr-4 text-gray-900 bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                       placeholder="Cari paket data (misal: 'Xtra Combo' atau 'Axis 20rb')">
+            </div>
+        </div>
+
+        <!-- 
+          Filter Tombol Provider
+        -->
+        <div class="flex flex-wrap gap-3 sm:gap-4 justify-center mb-10">
+            <button class="filter-btn active py-2 px-5 rounded-full text-sm sm:text-base font-medium bg-white text-gray-700" data-filter="all">
+                Semua Provider
+            </button>
+            <button class="filter-btn py-2 px-5 rounded-full text-sm sm:text-base font-medium bg-white text-gray-700" data-filter="xl">
+                XL
+            </button>
+            <button class="filter-btn py-2 px-5 rounded-full text-sm sm:text-base font-medium bg-white text-gray-700" data-filter="axis">
+                Axis
+            </button>
+        </div>
+        <!-- **********************************
+          * AKHIR PERUBAHAN
+          ********************************** -->
+
+        <!-- 
+          Grid ini sekarang KOSONG. JavaScript akan mengisinya.
+        -->
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+            <!-- Kartu produk dinamis akan dimuat di sini... -->
+        </div> 
+        
+        <!-- Indikator Loading BARU -->
+        <div id="loading-indicator" class="text-center py-16">
+            <div class="spinner"></div>
+            <p class="mt-4 text-lg text-gray-600">Memuat produk...</p>
+        </div>
+
+        <!-- Pesan "No Results" -->
+        <div id="no-results" class="hidden text-center py-16 px-6 bg-white rounded-lg shadow-md">
+            <svg class="h-12 w-12 text-gray-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 10V3m0 0a2 2 0 10-4 0v7m0 0a2 2 0 104 0M10 10l-2 2m2-2l2 2" />
+            </svg>
+            <h3 class="mt-4 text-xl font-semibold text-gray-900">Oops, produk tidak ditemukan!</h3>
+            <p class="mt-2 text-gray-500">Coba ubah filter atau kata kunci pencarian Anda.</p>
+        </div>
+
+
+        <!-- Kontrol Paginasi (Awalnya disembunyikan) -->
+        <div id="pagination-controls" class="hidden mt-12 flex justify-between items-center p-4 bg-white rounded-lg shadow-md">
+            <button id="prev-button" class="page-btn" disabled>&larr; Sebelumnya</button>
+            <span id="page-indicator" class="text-sm font-semibold text-gray-700"></span>
+            <button id="next-button" class="page-btn">Selanjutnya &rarr;</button>
+        </div>
+
+    </main>
+    
+    <!-- 
+      ********************************
+      * PERUBAHAN HTML MODAL DI SINI *
+      ********************************
+    -->
+    <div id="detail-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden transition-opacity duration-300 ease-in-out opacity-0">
+        <div id="modal-content-box" class="bg-white rounded-xl shadow-2xl max-w-lg w-full transition-all duration-300 ease-in-out transform scale-95 opacity-0">
+            
+            <div class="flex justify-between items-center p-5 border-b border-slate-200">
+                <h3 id="modal-title" class="text-xl font-bold text-slate-900">Detail Paket</h3>
+                <button id="modal-close-button" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <p class="text-sm text-slate-600 mb-4">Mohon konfirmasi detail pesanan Anda sebelum melanjutkan ke WhatsApp.</p>
+                
+                <div id="modal-details" class="space-y-4 border rounded-lg p-4 bg-slate-50">
+                    <!-- Konten dinamis akan diisi oleh JS -->
+                </div>
+                
+                <!-- *** BLOK HARGA BARU *** -->
+                <div id="modal-price-breakdown" class="mt-6 p-4 bg-sky-50 rounded-lg space-y-2">
+                    <div class="flex justify-between items-center text-slate-600">
+                        <span>Harga:</span>
+                        <span id="modal-base-price" class="font-medium text-slate-900">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between items-center text-slate-600">
+                        <span>Fee:</span>
+                        <span id="modal-fee" class="font-medium text-slate-900">Rp 0</span>
+                    </div>
+                    <hr class="border-slate-200 my-1">
+                    <div class="flex justify-between items-center text-sky-700">
+                        <span class="font-bold">Total Harga:</span>
+                        <span id="modal-total-price" class="text-2xl font-extrabold">Rp 0</span>
+                    </div>
+                </div>
+                <!-- *** AKHIR BLOK HARGA BARU *** -->
+
+            </div>
+            
+            <div class="p-5 bg-slate-50 rounded-b-xl flex justify-end space-x-3">
+                <button id="modal-cancel-button" class="py-2 px-4 bg-white border border-slate-300 rounded-lg text-slate-700 font-semibold hover:bg-slate-100 transition-colors">
+                    Batal
+                </button>
+                <button id="modal-confirm-button" data-wa-url="" class="py-2 px-6 bg-sky-500 text-white rounded-lg font-semibold hover:bg-sky-600 transition-colors shadow-sm hover:shadow-md">
+                    Beli via WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- **********************************
+      * AKHIR PERUBAHAN HTML MODAL
+      ********************************** -->
+
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-gray-400 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center">
+            <p>&copy; 2025 KiosData Keren. All rights reserved.</p>
+            <p class="text-sm mt-1">Dibuat dengan ⚡ untuk Anda.</p>
+        </div>
+    </footer>
+
+    <!-- CSS Internal untuk styling card (agar rapi) -->
+    <style>
+        .data-card {
+            display: flex; 
+            flex-direction: column;
+        }
+        .card-content {
+            background-color: #ffffff;
+            border-radius: 0.75rem; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
+            overflow: hidden;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            height: 100%; 
+            border: 1px solid transparent; 
+        }
+        .data-card[data-status="open"] .card-content:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+            border-color: #0ea5e9; 
+        }
+    </style>
+
+    <!-- 
+      ********************************
+      * JAVASCRIPT DINAMIS          *
+      ********************************
+    -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- PENGATURAN ---
+            
+            // ! PENTING: Ganti URL ini dengan URL Web App dari Google Apps Script Anda
+            const api_url = "https://script.google.com/macros/s/AKfycbxkZSjj7YATtK_Oeokbc_wZFBynJ1pNCU9_zbl1vhU6pqYmkvLrmde0j4GyBZEtKISK/exec";
+            
+            const waNumber = "+6285156896021"; // Ganti dengan nomor WA Anda
+            const itemsPerPage = 8; // Tampilkan 8 item per halaman
+            
+            // Helper Ikon (sama seperti sebelumnya)
+            const detailIcons = {
+                'Masa Aktif': '<svg class="h-4 w-4 text-gray-500 mr-2 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002 2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" /></svg>',
+                'Kuota Utama': '<svg class="h-4 w-4 text-gray-500 mr-2 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h12a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM4 11v4h12v-4H4z" /></svg>',
+                // ... (tambahkan ikon lain jika perlu, salin dari versi HTML sebelumnya)
+                'default': '<svg class="h-4 w-4 text-gray-500 mr-2 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>'
+            };
+            
+            /* Logo Provider */
+            const providerLogos = {
+                'telkomsel': 'https://placehold.co/150x60/E2212C/FFFFFF?text=TELKOMSEL&font=inter',
+                'indosat': 'https://placehold.co/150x60/FFC900/000000?text=INDOSAT&font=inter',
+                'xl': 'https://placehold.co/150x60/2E3191/FFFFFF?text=XL&font=inter',
+                'tri': 'https://placehold.co/150x60/A4000C/FFFFFF?text=TRI&font=inter',
+                'axis': 'https://placehold.co/150x60/8C0081/FFFFFF?text=AXIS&font=inter',
+                'xa': 'https://placehold.co/150x60/2E3191/FFFFFF?text=XL-AXIS&font=inter' // Ditambahkan
+            };
+            // --------------------
+
+            // --- FUNGSI HELPER BARU: Format Harga ---
+            function formatPrice(value) {
+                if (value === null || value === undefined) return '0';
+                // 1. Bersihkan string dari non-digit (misal: "Rp" atau "." sebelumnya)
+                const numberString = String(value).replace(/\D/g, '');
+                // 2. Ubah ke Angka
+                const number = Number(numberString);
+                // 3. Format ke standar Indonesia (menggunakan titik)
+                return number.toLocaleString('id-ID');
+            }
+            // ----------------------------------------
+
+            // --- STATE GLOBAL ---
+            let allProductData = []; // Ini akan menampung data dari Google Sheet
+            let currentPage = 1;
+            let currentFilter = 'all';
+            let currentSearchTerm = '';
+            // --------------------
+
+            // --- DOM Elements ---
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const grid = document.getElementById('product-grid');
+            const waHeaderButton = document.getElementById('wa-contact-header');
+            const prevButton = document.getElementById('prev-button');
+            const nextButton = document.getElementById('next-button');
+            const pageIndicator = document.getElementById('page-indicator');
+            const paginationControls = document.getElementById('pagination-controls');
+            const searchBar = document.getElementById('search-bar');
+            const noResultsMessage = document.getElementById('no-results');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            
+            // --- PERUBAHAN DI SINI: Elemen Modal ---
+            const modal = document.getElementById('detail-modal');
+            const modalContentBox = document.getElementById('modal-content-box');
+            const modalCloseButton = document.getElementById('modal-close-button');
+            const modalCancelButton = document.getElementById('modal-cancel-button');
+            const modalConfirmButton = document.getElementById('modal-confirm-button');
+            const modalTitle = document.getElementById('modal-title');
+            const modalDetails = document.getElementById('modal-details');
+            
+            // Elemen harga baru di modal
+            const modalBasePrice = document.getElementById('modal-base-price');
+            const modalFee = document.getElementById('modal-fee');
+            const modalTotalPrice = document.getElementById('modal-total-price');
+            // --------------------
+
+            
+            /**
+             * FUNGSI: Menggambar Kartu Produk
+             * Mengubah objek data produk menjadi string HTML
+             */
+            function generateCardHTML(product) {
+                const isClose = product.status === 'close';
+                const statusLabel = isClose ? 'Close' : 'Open';
+                const statusColor = isClose ? 'bg-red-600' : 'bg-green-500';
+                
+                // Styling tombol Beli berdasarkan status
+                const buyButtonClasses = isClose 
+                    ? 'bg-gray-400 cursor-not-allowed pointer-events-none'
+                    : 'bg-sky-600 hover:bg-sky-700 hover:shadow-lg hover:-translate-y-0.5';
+
+                // Membuat detail list
+                let detailsHTML = '';
+                if (product.detail) {
+                    const detailsArray = product.detail.split(',');
+                    detailsArray.forEach(detail => {
+                        const parts = detail.split(':');
+                        const key = parts[0] ? parts[0].trim() : 'Info';
+                        const value = parts[1] ? parts[1].trim() : '';
+                        
+                        // Cari ikon yang sesuai
+                        const iconSvg = detailIcons[key] || detailIcons['default']; 
+                        
+                        detailsHTML += `
+                            <div class="flex items-center text-gray-700 text-sm">
+                                ${iconSvg}
+                                <span>${key}: <strong class="text-gray-900">${value}</strong></span>
+                            </div>
+                        `;
+                    });
+                }
+                
+                // Gunakan logo provider, atau logo default jika tidak ditemukan
+                const logoUrl = providerLogos[product.provider] || 'https://placehold.co/150x60/cccccc/000000?text=PRODUK';
+
+                // --- PERUBAHAN DI SINI: Menambahkan data-fee ---
+                return `
+                <div class="data-card card-enter" 
+                     data-status="${product.status}" 
+                     data-provider="${product.provider}" 
+                     data-nama="${product.nama}" 
+                     data-harga="${product.harga}"
+                     data-fee="${product.fee}" 
+                     data-detail="${product.detail}">
+                    
+                    <div class="card-content">
+                        <!-- Badge Status BARU -->
+                        <div class="absolute top-0 left-0 ${statusColor} text-white font-bold px-3 py-1 rounded-br-lg text-sm z-10">${statusLabel}</div>
+                        
+                        <div class="p-5 border-b border-gray-100 flex justify-center bg-gray-50">
+                            <img src="${logoUrl}" alt="Logo ${product.provider}" class="h-12">
+                        </div>
+                        
+                        <div class="p-6">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-4">${product.nama}</h3>
+                            <div class="space-y-3 mb-6">
+                                ${detailsHTML}
+                            </div>
+                        </div>
+                        
+                        <div class="bg-slate-50 p-6 flex items-center justify-between mt-auto">
+                            <span class="text-2xl font-extrabold text-sky-700">Rp ${formatPrice(product.harga)}</span>
+                            <a href="#" class="btn-buy ${buyButtonClasses} text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300">Beli</a>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }
+
+            
+            /**
+             * Fungsi utama untuk merender kartu dan paginasi
+             */
+            function renderPage() {
+                // 1. Tentukan item mana yang akan difilter (dari allProductData)
+                const filteredCards = allProductData.filter(product => {
+                    
+                    // --- Logika Filter Provider (Sudah benar) ---
+                    let providerMatch = false;
+                    if (currentFilter === 'all') {
+                        providerMatch = true;
+                    } else if (currentFilter === 'xl') {
+                        providerMatch = (product.provider === 'xl' || product.provider === 'xa');
+                    } else if (currentFilter === 'axis') {
+                        providerMatch = (product.provider === 'axis' || product.provider === 'xa');
+                    }
+                    // --- AKHIR LOGIKA FILTER ---
+                    
+                    const searchTerm = currentSearchTerm.toLowerCase();
+                    const searchMatch = (
+                        product.nama.toLowerCase().includes(searchTerm) || 
+                        product.detail.toLowerCase().includes(searchTerm) ||
+                        product.provider.toLowerCase().includes(searchTerm)
+                    );
+
+                    return providerMatch && searchMatch;
+                });
+                
+                // 2. Kalkulasi Paginasi
+                const totalItems = filteredCards.length;
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+                // Sembunyikan/Tampilkan "No Results"
+                noResultsMessage.classList.toggle('hidden', totalItems > 0);
+                
+                // Sembunyikan/Tampilkan kontrol paginasi
+                paginationControls.classList.toggle('hidden', totalPages <= 1);
+
+                // 3. Tentukan item untuk halaman ini
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const itemsToShow = filteredCards.slice(startIndex, endIndex);
+
+                // 4. Render Kartu (BARU: gambar HTML)
+                grid.innerHTML = ''; // Kosongkan grid
+                itemsToShow.forEach(product => {
+                    grid.innerHTML += generateCardHTML(product); // Tambahkan HTML kartu
+                });
+
+                // 5. Update Kontrol Paginasi
+                if (totalPages > 0) {
+                    pageIndicator.textContent = `Halaman ${currentPage} dari ${totalPages}`;
+                } else {
+                    pageIndicator.textContent = ""; 
+                }
+                prevButton.disabled = (currentPage === 1);
+                nextButton.disabled = (currentPage === totalPages || totalPages === 0);
+            }
+
+            // --- FUNGSI MODAL (Tidak Berubah) ---
+            function showModal() {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modalContentBox.classList.remove('opacity-0', 'scale-95');
+                }, 10);
+            }
+            function hideModal() {
+                modal.classList.add('opacity-0');
+                modalContentBox.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+            // ------------------------------------
+
+
+            // --- FUNGSI UTAMA BARU: Load Data ---
+            async function loadProducts() {
+                if (api_url === "PASTE_URL_ANDA_DI_SINI" || api_url === "") {
+                    grid.innerHTML = `<p class="text-center text-red-600 font-bold col-span-full">Error: API URL belum diatur. Harap edit file index.html dan masukkan URL Google Apps Script Anda.</p>`;
+                    loadingIndicator.classList.add('hidden');
+                    return;
+                }
+                
+                loadingIndicator.classList.remove('hidden');
+                noResultsMessage.classList.add('hidden');
+                paginationControls.classList.add('hidden');
+
+                try {
+                    const response = await fetch(api_url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    
+                    if (data && !data.error) {
+                        allProductData = data; // Simpan data ke state global
+                        currentPage = 1;
+                        renderPage(); // Render pertama kali
+                    } else {
+                        throw new Error(data.message || "Data tidak valid dari API.");
+                    }
+
+                } catch (error) {
+                    console.error("Gagal mengambil data produk:", error);
+                    grid.innerHTML = `<p class="text-center text-red-600 font-bold col-span-full">Gagal memuat produk. Cek konsol (F12) untuk detail. Pastikan URL API sudah benar dan Google Sheet Anda memiliki izin akses 'Anyone'.</p>`;
+                } finally {
+                    loadingIndicator.classList.add('hidden');
+                }
+            }
+            
+            // --- EVENT LISTENERS (Sebagian besar sama) ---
+
+            // 1. Listener untuk Search Bar
+            searchBar.addEventListener('input', () => { 
+                currentSearchTerm = searchBar.value; 
+                currentPage = 1; 
+                renderPage();
+            });
+
+            // 2. Listener untuk Tombol Filter
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    currentFilter = button.getAttribute('data-filter');
+                    currentPage = 1; 
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    renderPage();
+                });
+            });
+
+            // 3. Listener untuk Tombol Paginasi
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderPage();
+                    document.documentElement.scrollTop = 0; 
+                }
+            });
+
+            nextButton.addEventListener('click', () => {
+                // Perhitungan totalPages kini harus dinamis berdasarkan filter
+                const totalFiltered = allProductData.filter(product => {
+                    // Logika filter harus SAMA PERSIS dengan di renderPage
+                    let providerMatch = false;
+                    if (currentFilter === 'all') {
+                        providerMatch = true;
+                    } else if (currentFilter === 'xl') {
+                        providerMatch = (product.provider === 'xl' || product.provider === 'xa');
+                    } else if (currentFilter === 'axis') {
+                        providerMatch = (product.provider === 'axis' || product.provider === 'xa');
+                    }
+                    
+                    const searchTerm = currentSearchTerm.toLowerCase();
+                    const searchMatch = (
+                        product.nama.toLowerCase().includes(searchTerm) || 
+                        product.detail.toLowerCase().includes(searchTerm) ||
+                        product.provider.toLowerCase().includes(searchTerm)
+                    );
+                    return providerMatch && searchMatch;
+                }).length;
+                const totalPages = Math.ceil(totalFiltered / itemsPerPage);
+                
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderPage();
+                    document.documentElement.scrollTop = 0;
+                }
+            });
+
+            // 4. Listener untuk Tombol Beli (WA) - Menggunakan event delegation
+            // --- PERUBAHAN BESAR DI SINI ---
+            grid.addEventListener('click', function(e) {
+                const buyButton = e.target.closest('.btn-buy'); 
+                if (buyButton) {
+                    e.preventDefault(); 
+                    
+                    const card = buyButton.closest('.data-card');
+                    if (card.dataset.status === 'close') return; 
+
+                    // 1. Ambil SEMUA data dari card
+                    const productName = card.getAttribute('data-nama');
+                    const productPriceRaw = card.getAttribute('data-harga');
+                    const productFeeRaw = card.getAttribute('data-fee'); // BARU
+                    const productDetailsRaw = card.getAttribute('data-detail');
+                    const productDetails = productDetailsRaw.split(','); 
+
+                    // 2. Kalkulasi Harga
+                    const price = Number(String(productPriceRaw).replace(/\D/g, '')) || 0;
+                    const fee = Number(String(productFeeRaw).replace(/\D/g, '')) || 0;
+                    const total = price + fee;
+                    
+                    // 3. Format Harga
+                    const formattedPrice = formatPrice(price);
+                    const formattedFee = formatPrice(fee);
+                    const formattedTotal = formatPrice(total);
+
+                    // 4. Buat detailText UNTUK WA
+                    let detailText = "";
+                    productDetails.forEach(detail => {
+                        detailText += `\n- ${detail.trim()}`;
+                    });
+                    
+                    // 5. Buat message dan waUrl (BARU)
+                    const message = `Halo Kak, saya mau pesan:\n
+*Produk:* ${productName}
+*Harga:* Rp ${formattedPrice}
+*Fee:* Rp ${formattedFee}
+*Total:* Rp ${formattedTotal}
+\n*Detail:* ${detailText}\n
+Mohon segera diproses ya. Terima kasih!`;
+                    
+                    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+                    
+                    // 6. Isi Modal
+                    modalTitle.textContent = productName;
+                    modalConfirmButton.dataset.waUrl = waUrl; 
+                    
+                    // Isi rincian harga BARU
+                    modalBasePrice.textContent = `Rp ${formattedPrice}`;
+                    modalFee.textContent = `Rp ${formattedFee}`;
+                    modalTotalPrice.textContent = `Rp ${formattedTotal}`;
+
+                    // 7. Isi Detail Modal (Loop yang benar)
+                    modalDetails.innerHTML = ''; // Kosongkan dulu
+                    productDetails.forEach(detail => {
+                        const parts = detail.split(':');
+                        const key = parts[0].trim();
+                        const value = parts[1].trim();
+                        const iconSvg = detailIcons[key] || detailIcons['default'];
+                        
+                        const detailElement = document.createElement('div');
+                        detailElement.className = "flex items-center text-gray-700 text-sm";
+                        detailElement.innerHTML = `
+                            ${iconSvg}
+                            <span>${key}: <strong class="text-gray-900">${value}</strong></span>
+                        `;
+                        modalDetails.appendChild(detailElement);
+                    });
+
+                    // 8. Tampilkan Modal
+                    showModal();
+                }
+            });
+            
+            // 5. Listener untuk Tombol WA di Header (Sama)
+            waHeaderButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const message = "Halo KiosData, saya ingin bertanya tentang paket data yang tersedia.";
+                const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+                window.open(waUrl, '_blank');
+            });
+            
+            // 6. LISTENER MODAL (Sama)
+            modalCloseButton.addEventListener('click', hideModal);
+            modalCancelButton.addEventListener('click', hideModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) { 
+                    hideModal();
+                }
+            });
+            modalConfirmButton.addEventListener('click', function() {
+                const waUrl = this.dataset.waUrl; 
+                if (waUrl) {
+                    window.open(waUrl, '_blank'); 
+                }
+                hideModal(); 
+            });
+
+            // --- INISIALISASI ---
+            // Panggil fungsi loadProducts() untuk memulai semuanya
+            loadProducts();
+        });
+    </script>
+
+</body>
+</html>
