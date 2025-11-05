@@ -106,33 +106,110 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* PERUBAHAN: Menambahkan class sr-only (untuk aksesibilitas) */
+        .sr-only {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border-width: 0;
+        }
     </style>
 </head>
 <body class="antialiased">
 
-    <!-- 
-      ********************************
-      * PERUBAHAN HEADER DI SINI     *
-      ********************************
-    -->
-    <header class="bg-white/75 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-slate-200">
-        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <!-- Logo -->
+    <!-- *** PERUBAHAN UI SIDEBAR *** -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-50 hidden transition-opacity duration-300 ease-in-out" aria-hidden="true"></div>
+
+    <!-- Struktur <aside> diubah menjadi flex-col untuk sticky footer -->
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-72 sm:w-80 bg-white shadow-xl z-[60] transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        
+        <!-- Header Sidebar (Logo) -->
+        <div class="flex justify-between items-center p-4 border-b border-slate-200 shrink-0">
+            <!-- Logo & Nama Brand -->
             <div class="flex items-center space-x-2">
                 <svg class="h-8 w-8 text-sky-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                <span class="text-2xl font-bold tracking-tight text-slate-900">KiosData</span>
+                <span class="text-xl font-bold tracking-tight text-slate-900">KiosData</span>
             </div>
-            <!-- Tombol Cek Area BARU -->
-            <button id="cek-area-button" class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-300 text-sm sm:text-base shadow-md hover:shadow-lg">
-                Cek Area
+            <!-- Tombol Tutup -->
+            <button id="sidebar-close-btn" class="text-slate-500 hover:text-slate-800" aria-label="Tutup menu">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
             </button>
+        </div>
+        
+        <!-- Navigasi Sidebar (Konten yang bisa di-scroll) -->
+        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+            <!-- Grup 1: Navigasi -->
+            <h3 class="px-3 text-xs font-semibold uppercase text-slate-500 tracking-wider">Navigasi</h3>
+            
+            <!-- *** PERUBAHAN: Menambahkan ID "cek-area-link" *** -->
+            <a href="#" id="cek-area-link" class="flex items-center gap-3 py-2.5 px-3 rounded-lg text-slate-700 font-medium hover:bg-sky-50 hover:text-sky-600 transition-colors">
+                <!-- Ikon Map Pin -->
+                <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                </svg>
+                <span>Cek Area Anda</span>
+            </a>
+            
+            <!-- Grup 2: Bantuan -->
+            <h3 class="px-3 pt-4 text-xs font-semibold uppercase text-slate-500 tracking-wider">Bantuan</h3>
+            <!-- ID "wa-contact-header" tetap di sini -->
+            <a href="#" id="wa-contact-header" class="flex items-center gap-3 py-2.5 px-3 rounded-lg text-slate-700 font-medium hover:bg-sky-50 hover:text-sky-600 transition-colors">
+                <!-- Ikon WA -->
+                <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                     <path d="M12 2C6.48 2 2 6.48 2 12c0 1.74.44 3.38 1.22 4.86L2 22l5.26-1.38c1.44.74 3.02 1.16 4.74 1.16 5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.54 0-2.98-.44-4.22-1.22l-.3-.18-3.12.82.84-3.04-.2-.32C3.6 15.06 3 13.58 3 12c0-4.96 4.04-9 9-9s9 4.04 9 9-4.04 9-9 9zm4.4-6.22c-.22-.1-1.28-.64-1.48-.72-.2-.06-.34-.1-.48.1-.14.2-.56.64-.7 0.78-.12.14-.24.16-.44.06-.2-.1-.86-.32-1.64-1.02-.6-.54-1-1.2-1.12-1.4-.12-.2-.02-.3.08-.42.1-.1.22-.26.34-.4.1-.14.14-.24.2-.4.06-.16.04-.3-.02-.4L8.9 9.3c-.08-.18-.16-.32-.24-.44-.08-.1-.18-.12-.28-.12s-.22-.02-.34-.02c-.12 0-.3.04-.46.2-.16.16-.6.58-.6 1.42 0 .84.62 1.64.7 1.76.1.12 1.2 1.86 2.92 2.6.4.18.7.3.96.38.48.16.92.14 1.26.08.38-.06 1.14-.46 1.3-.92.16-.44.16-.84.1-.92-.04-.08-.14-.12-.36-.22z"/>
+                </svg>
+                <span>Hubungi Kami</span>
+            </a>
+        </nav>
+
+        <!-- Footer Sidebar -->
+        <div class="p-4 border-t border-slate-200 shrink-0">
+            <p class="text-xs text-slate-500 text-center">© 2025 KiosData v1.0.0</p>
+        </div>
+    </aside>
+    <!-- *** AKHIR PERUBAHAN UI SIDEBAR *** -->
+
+
+    <!-- 
+        HEADER MODERN (Glassmorphism)
+    -->
+    <header class="bg-white/75 backdrop-blur-lg shadow-sm sticky top-0 z-40 border-b border-slate-200"> <!-- Z-index diubah ke 40 -->
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            
+            <!-- *** PERUBAHAN: Grup Kiri (Tombol Menu + Logo) *** -->
+            <div class="flex items-center space-x-3">
+                <!-- Tombol Menu (Hamburger) - Dipindahkan ke sini -->
+                <button id="menu-toggle" class="text-slate-700 hover:text-sky-600 p-2 rounded-md" aria-label="Buka menu"> <!-- Menghapus -mr-2 -->
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <svg class="h-8 w-8 text-sky-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span class="text-2xl font-bold tracking-tight text-slate-900">KiosData</span>
+                </div>
+            </div>
+            <!-- *** AKHIR PERUBAHAN *** -->
+
+            <!-- Tombol Menu (Hamburger) - Dihapus dari sini -->
+
         </nav>
     </header>
-    <!-- **********************************
-      * AKHIR PERUBAHAN HEADER
-      ********************************** -->
 
     <!-- Konten Utama -->
     <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -161,7 +238,7 @@
         </div>
 
         <!-- 
-          Filter Tombol Provider
+            Filter Tombol Provider
         -->
         <div class="flex flex-wrap gap-3 sm:gap-4 justify-center mb-10">
             <button class="filter-btn active py-2 px-5 rounded-full text-sm sm:text-base font-medium bg-white text-gray-700" data-filter="all">
@@ -176,13 +253,13 @@
         </div>
 
         <!-- 
-          Grid ini sekarang KOSONG. JavaScript akan mengisinya.
+            Grid ini sekarang KOSONG. JavaScript akan mengisinya.
         -->
         <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
             <!-- Kartu produk dinamis akan dimuat di sini... -->
         </div> 
         
-        <!-- Indikator Loading BARU -->
+        <!-- Indikator Loading -->
         <div id="loading-indicator" class="text-center py-16">
             <div class="spinner"></div>
             <p class="mt-4 text-lg text-gray-600">Memuat produk...</p>
@@ -208,7 +285,7 @@
     </main>
     
     <!-- 
-      MODAL DETAIL PRODUK (Lama, tidak diubah)
+        HTML MODAL (Detail Beli)
     -->
     <div id="detail-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden transition-opacity duration-300 ease-in-out opacity-0">
         <div id="modal-content-box" class="bg-white rounded-xl shadow-2xl max-w-lg w-full transition-all duration-300 ease-in-out transform scale-95 opacity-0">
@@ -243,6 +320,7 @@
                         <span id="modal-total-price" class="text-2xl font-extrabold">Rp 0</span>
                     </div>
                 </div>
+
             </div>
             
             <div class="p-5 bg-slate-50 rounded-b-xl flex justify-end space-x-3">
@@ -255,15 +333,12 @@
             </div>
         </div>
     </div>
-
-    <!-- 
-      ********************************
-      * MODAL BARU UNTUK CEK AREA    *
-      ********************************
-    -->
+    
+    <!-- *** HTML BARU: Modal Cek Area *** -->
     <div id="area-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden transition-opacity duration-300 ease-in-out opacity-0">
         <div id="area-modal-content-box" class="bg-white rounded-xl shadow-2xl max-w-lg w-full transition-all duration-300 ease-in-out transform scale-95 opacity-0">
             
+            <!-- Header Modal Area -->
             <div class="flex justify-between items-center p-5 border-b border-slate-200">
                 <h3 class="text-xl font-bold text-slate-900">Cek Area Anda</h3>
                 <button id="area-modal-close-button" class="text-slate-400 hover:text-slate-600 transition-colors">
@@ -271,29 +346,33 @@
                 </button>
             </div>
             
+            <!-- Konten Modal Area -->
             <div class="p-6">
-                <p class="text-sm text-slate-600 mb-4">Masukkan nama Kota atau Kabupaten Anda untuk melihat jangkauan area.</p>
-                
-                <!-- Search Bar untuk Area -->
-                <div class="relative mb-4">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+                <!-- Input Pencarian Area -->
+                <div class="mb-4">
+                    <label for="area-search-input" class="sr-only">Cari Kota/Kabupaten...</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+                        </div>
+                        <input type="search" id="area-search-input"
+                               class="block w-full py-2.5 pl-10 pr-4 text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                               placeholder="Ketik nama Kota/Kabupaten...">
                     </div>
-                    <input type="search" id="area-search-input"
-                           class="block w-full py-2.5 pl-12 pr-4 text-gray-900 bg-slate-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                           placeholder="Contoh: Kota Bogor">
                 </div>
-
+                
                 <!-- Hasil Pencarian Area -->
-                <div id="area-results" class="mt-6 max-h-60 overflow-y-auto bg-slate-50 rounded-lg border border-slate-200 p-2">
-                    <p class="text-slate-500 text-center p-4">Silakan mulai ketik untuk mencari...</p>
+                <div id="area-results-display" class="bg-slate-50 border rounded-lg p-4 min-h-[100px] max-h-60 overflow-y-auto">
+                    <!-- Status Awal -->
+                    <p class="text-slate-500">Silakan ketik nama kota atau kabupaten Anda di atas.</p>
+                    
+                    <!-- Hasil akan muncul di sini -->
                 </div>
             </div>
+
         </div>
     </div>
-    <!-- **********************************
-      * AKHIR MODAL BARU
-      ********************************** -->
+    <!-- *** AKHIR HTML BARU *** -->
 
 
     <!-- Footer -->
@@ -329,95 +408,94 @@
     </style>
 
     <!-- 
-      ********************************
-      * JAVASCRIPT DINAMIS          *
-      ********************************
+        ********************************
+        * JAVASCRIPT DINAMIS           *
+        ********************************
     -->
     <script>
-        // --- DATA AREA BARU (Dari tabel Anda) ---
-        // Saya telah memproses tabel HTML Anda menjadi data JSON yang bersih
-        const areaData = [
-            { kota: "Kota Tangerang Selatan", area: "Area 2" }, { kota: "Kota Tangerang", area: "Area 2" }, { kota: "Kab. Tangerang", area: "Area 2" }, { kota: "Kab. Pandeglang", area: "Area 2" }, { kota: "Kab. Lebak", area: "Area 2" }, { kota: "Kab. Serang", area: "Area 2" }, { kota: "Kota Serang", area: "Area 2" }, { kota: "Kota Cilegon", area: "Area 2" },
-            { kota: "Kab. Kulon Progo", area: "Area 1" }, { kota: "Kota Yogyakarta", area: "Area 1" }, { kota: "Kab. Sleman", area: "Area 1" }, { kota: "Kab. Bantul", area: "Area 1" }, { kota: "Kab. Gunungkidul", area: "Area 1" },
-            { kota: "Kota Jakarta Pusat", area: "Area 2" }, { kota: "Kota Jakarta Selatan", area: "Area 2" }, { kota: "Kota Jakarta Barat", area: "Area 2" }, { kota: "Kota Jakarta Timur", area: "Area 2" }, { kota: "Kota Jakarta Utara", area: "Area 2" },
-            { kota: "Kab. Kepulauan Seribu", area: "Area 3" },
-            { kota: "Kab. Bandung", area: "Area 1" }, { kota: "Kab. Kuningan", area: "Area 1" }, { kota: "Kab. Purwakarta", area: "Area 1" }, { kota: "Kota Bandung", area: "Area 1" },
-            { kota: "Kab. Bandung Barat", area: "Area 2" }, { kota: "Kota Cimahi", area: "Area 2" }, { kota: "Kab. Cirebon", area: "Area 2" }, { kota: "Kota Cirebon", area: "Area 2" }, { kota: "Kab. Indramayu", area: "Area 2" }, { kota: "Kab. Subang", area: "Area 2" },
-            { kota: "Kab. Bogor", area: "Area 3" }, { kota: "Kota Bogor", area: "Area 3" }, { kota: "Kota Depok", area: "Area 3" }, { kota: "Kota Bekasi", area: "Area 3" }, { kota: "Kota Banjar", area: "Area 3" }, { kota: "Kab. Ciamis", area: "Area 3" }, { kota: "Kota Tasikmalaya", area: "Area 3" }, { kota: "Kab. Majalengka", area: "Area 3" }, { kota: "Kab. Sumedang", area: "Area 3" }, { kota: "Kab. Bekasi", area: "Area 3" }, { kota: "Kab. Tasikmalaya", area: "Area 3" }, { kota: "Kab. Garut", area: "Area 3" },
-            { kota: "Kab. Cianjur", area: "Area 4" }, { kota: "Kab. Pangandaran", area: "Area 4" }, { kota: "Kab. Karawang", area: "Area 4" }, { kota: "Kota Sukabumi", area: "Area 4" }, { kota: "Kab. Sukabumi", area: "Area 4" },
-            { kota: "Kab. Tegal", area: "Area 2" }, { kota: "Kota Surakarta", area: "Area 2" }, { kota: "Kota Tegal", area: "Area 2" }, { kota: "Kab. Brebes", area: "Area 2" }, { kota: "Kab. Kebumen", area: "Area 2" }, { kota: "Kab. Pemalang", area: "Area 2" }, { kota: "Kota Semarang", area: "Area 2" },
-            { kota: "Kab. Boyolali", area: "Area 3" }, { kota: "Kota Salatiga", area: "Area 3" }, { kota: "Kab. Semarang", area: "Area 3" }, { kota: "Kab. Cilacap", area: "Area 3" }, { kota: "Kab. Grobogan", area: "Area 3" }, { kota: "Kab. Kendal", area: "Area 3" }, { kota: "Kab. Rembang", area: "Area 3" },
-            { kota: "Kota Pekalongan", area: "Area 4" }, { kota: "Kab. Pekalongan", area: "Area 4" }, { kota: "Kab. Batang", area: "Area 4" }, { kota: "Kab. Purbalingga", area: "Area 4" }, { kota: "Kab. Kudus", area: "Area 4" }, { kota: "Kab. Sukoharjo", area: "Area 4" }, { kota: "Kab. Klaten", area: "Area 4" }, { kota: "Kota Magelang", area: "Area 4" }, { kota: "Kab. Banyumas", area: "Area 4" }, { kota: "Kab. Magelang", area: "Area 4" }, { kota: "Kab. Temanggung", area: "Area 4" }, { kota: "Kab. Sragen", area: "Area 4" }, { kota: "Kab. Banjarnegara", area: "Area 4" }, { kota: "Kab. Karanganyar", area: "Area 4" }, { kota: "Kab. Wonosobo", area: "Area 4" }, { kota: "Kab. Jepara", area: "Area 4" }, { kota: "Kab. Demak", area: "Area 4" }, { kota: "Kab. Purworejo", area: "Area 4" }, { kota: "Kab. Blora", area: "Area 4" }, { kota: "Kab. Wonogiri", area: "Area 4" }, { kota: "Kab. Pati", area: "Area 4" },
-            { kota: "Kota Probolinggo", area: "Area 2" }, { kota: "Kab. Bangkalan", area: "Area 2" }, { kota: "Kab. Sidoarjo", area: "Area 2" }, { kota: "Kab. Banyuwangi", area: "Area 2" }, { kota: "Kota Surabaya", area: "Area 2" }, { kota: "Kab. Sampang", area: "Area 2" }, { kota: "Kab. Pamekasan", area: "Area 2" }, { kota: "Kab. Sumenep", area: "Area 2" }, { kota: "Kab. Pacitan", area: "Area 2" },
-            { kota: "Kab. Lumajang", area: "Area 3" }, { kota: "Kab. Probolinggo", area: "Area 3" },
-            { kota: "Kab. Jombang", area: "Area 4" }, { kota: "Kota Blitar", area: "Area 4" }, { kota: "Kab. Blitar", area: "Area 4" }, { kota: "Kota Kediri", area: "Area 4" }, { kota: "Kab. Lamongan", area: "Area 4" }, { kota: "Kab. Kediri", area: "Area 4" }, { kota: "Kab. Ngawi", area: "Area 4" }, { kota: "Kab. Mojokerto", area: "Area 4" }, { kota: "Kota Mojokerto", area: "Area 4" }, { kota: "Kab. Magetan", area: "Area 4" }, { kota: "Kab. Gresik", area: "Area 4" }, { kota: "Kab. Tulungagung", area: "Area 4" }, { kota: "Kab. Nganjuk", area: "Area 4" }, { kota: "Kab. Pasuruan", area: "Area 4" }, { kota: "Kota Pasuruan", area: "Area 4" }, { kota: "Kab. Bojonegoro", area: "Area 4" }, { kota: "Kab. Madiun", area: "Area 4" }, { kota: "Kab. Bondowoso", area: "Area 4" }, { kota: "Kab. Tuban", area: "Area 4" }, { kota: "Kota Madiun", area: "Area 4" }, { kota: "Kab. Situbondo", area: "Area 4" }, { kota: "Kab. Jember", area: "Area 4" }, { kota: "Kota Malang", area: "Area 4" }, { kota: "Kab. Malang", area: "Area 4" }, { kota: "Kab. Ponorogo", area: "Area 4" }, { kota: "Kota Batu", area: "Area 4" }, { kota: "Kab. Trenggalek", area: "Area 4" },
-            { kota: "Kab. Seluma", area: "Area 3" },
-            { kota: "Kab. Bengkulu Selatan", area: "Area 4" }, { kota: "Kab. Kaur", area: "Area 4" }, { kota: "Kab. Lebong", area: "Area 4" }, { kota: "Kab. Rejang Lebong", area: "Area 4" }, { kota: "Kab. Bengkulu Tengah", area: "Area 4" }, { kota: "Kota Bengkulu", area: "Area 4" }, { kota: "Kab. Bengkulu Utara", area: "Area 4" }, { kota: "Kab. Kepahiang", area: "Area 4" }, { kota: "Kab. Muko Muko", area: "Area 4" },
-            { kota: "Kab. Batanghari", area: "Area 3" }, { kota: "Kota Jambi", area: "Area 3" }, { kota: "Kab. Tanjung Jabung Barat", area: "Area 3" }, { kota: "Kab. Muaro Jambi", area: "Area 3" }, { kota: "Kab. Sarolangun", area: "Area 3" },
-            { kota: "Kab. Tanjung Jabung Timur", area: "Area 4" }, { kota: "Kab. Kerinci", area: "Area 4" }, { kota: "Kab. Bungo", area: "Area 4" }, { kota: "Kab. Tebo", area: "Area 4" }, { kota: "Kab. Merangin", area: "Area 4" }, { kota: "Kota Sungai Penuh", area: "Area 4" },
-            { kota: "Kab. Bangka Selatan", area: "Area 2" }, { kota: "Kota Pangkal Pinang", area: "Area 2" }, { kota: "Kab. Belitung", area: "Area 2" }, { kota: "Kab. Belitung Timur", area: "Area 2" },
-            { kota: "Kab. Bangka", area: "Area 3" }, { kota: "Kab. Bangka Tengah", area: "Area 3" }, { kota: "Kab. Bangka Barat", area: "Area 3" },
-            { kota: "Kota Batam", area: "Area 2" },
-            { kota: "Kab. Karimun", area: "Area 3" }, { kota: "Kab. Bintan", area: "Area 3" }, { kota: "Kota Tanjung Pinang", area: "Area 3" },
-            { kota: "Kab. Lingga", area: "Area 4" }, { kota: "Kab. Kepulauan Anambas", area: "Area 4" }, { kota: "Kab. Natuna", area: "Area 4" },
-            { kota: "Kab. Lampung Tengah", area: "Area 3" }, { kota: "Kab. Pringsewu", area: "Area 3" }, { kota: "Kota Metro", area: "Area 3" }, { kota: "Kab. Pesawaran", area: "Area 3" }, { kota: "Kab. Lampung Selatan", area: "Area 3" }, { kota: "Kota Bandar Lampung", area: "Area 3" },
-            { kota: "Kab. Lampung Barat", area: "Area 4" }, { kota: "Kab. Lampung Timur", area: "Area 4" }, { kota: "Kab. Tulang Bawang Barat", area: "Area 4" }, { kota: "Kab. Way Kanan", area: "Area 4" }, { kota: "Kab. Tulang Bawang", area: "Area 4" }, { kota: "Kab. Tanggamus", area: "Area 4" }, { kota: "Kab. Pesisir Barat", area: "Area 4" }, { kota: "Kab. Lampung Utara", area: "Area 4" }, { kota: "Kab. Mesuji", area: "Area 4" },
-            { kota: "Kab. Aceh Barat Daya", area: "Area 2" }, { kota: "Kab. Aceh Besar", area: "Area 2" }, { kota: "Kota Sabang", area: "Area 2" }, { kota: "Kab. Gayo Lues", area: "Area 2" },
-            { kota: "Kab. Aceh Jaya", area: "Area 3" }, { kota: "Kab. Aceh Selatan", area: "Area 3" }, { kota: "Kab. Aceh Tenggara", area: "Area 3" }, { kota: "Kab. Nagan Raya", area: "Area 3" }, { kota: "Kota Banda Aceh", area: "Area 3" },
-            { kota: "Kab. Aceh Barat", area: "Area 4" }, { kota: "Kab. Aceh Singkil", area: "Area 4" }, { kota: "Kab. Aceh Tamiang", area: "Area 4" }, { kota: "Kab. Aceh Tengah", area: "Area 4" }, { kota: "Kota Subulussalam", area: "Area 4" }, { kota: "Kab. Bener Meriah", area: "Area 4" }, { kota: "Kab. Aceh Utara", area: "Area 4" }, { kota: "Kota Lhokseumawe", area: "Area 4" }, { kota: "Kab. Pidie", area: "Area 4" }, { kota: "Kab. Aceh Timur", area: "Area 4" }, { kota: "Kab. Simeulue", area: "Area 4" }, { kota: "Kota Langsa", area: "Area 4" }, { kota: "Kab. Bireuen", area: "Area 4" }, { kota: "Kab. Pidie Jaya", area: "Area 4" },
-            { kota: "Kota Pekanbaru", area: "Area 2" },
-            { kota: "Kab. Kuantan Singingi", area: "Area 3" }, { kota: "Kab. Pelalawan", area: "Area 3" }, { kota: "Kab. Kampar", area: "Area 3" }, { kota: "Kab. Siak", area: "Area 3" }, { kota: "Kota Dumai", area: "Area 3" }, { kota: "Kab. Rokan Hilir", area: "Area 3" }, { kota: "Kab. Indragiri Hulu", area: "Area 3" }, { kota: "Kab. Kepulauan Meranti", area: "Area 3" }, { kota: "Kab. Bengkalis", area: "Area 3" },
-            { kota: "Kab. Rokan Hulu", area: "Area 4" }, { kota: "Kab. Indragiri Hilir", area: "Area 4" },
-            { kota: "Kab. Kepulauan Mentawai", area: "Area 2" },
-            { kota: "Kota Payakumbuh", area: "Area 3" }, { kota: "Kota Padang Panjang", area: "Area 3" }, { kota: "Kab. Sijunjung", area: "Area 3" }, { kota: "Kab. Padang Pariaman", area: "Area 3" }, { kota: "Kota Padang", area: "Area 3" }, { kota: "Kab. Solok Selatan", area: "Area 3" },
-            { kota: "Kab. Pasaman Barat", area: "Area 4" }, { kota: "Kab. Pasaman", area: "Area 4" }, { kota: "Kab. Lima Puluh Kota", area: "Area 4" }, { kota: "Kab. Tanah Datar", area: "Area 4" }, { kota: "Kab. Dharmasraya", area: "Area 4" }, { kota: "Kota Solok", area: "Area 4" }, { kota: "Kab. Agam", area: "Area 4" }, { kota: "Kab. Solok", area: "Area 4" }, { kota: "Kota Bukittinggi", area: "Area 4" }, { kota: "Kota Pariaman", area: "Area 4" }, { kota: "Kota Sawahlunto", area: "Area 4" }, { kota: "Kab. Pesisir Selatan", area: "Area 4" },
-            { kota: "Kab. Ogan Komering Ilir", area: "Area 3" }, { kota: "Kab. Penukal Abab Lematang Ilir", area: "Area 3" }, { kota: "Kab. Banyuasin", area: "Area 3" }, { kota: "Kota Palembang", area: "Area 3" }, { kota: "Kab. Ogan Ilir", area: "Area 3" },
-            { kota: "Kab. Ogan Komering Ulu Timur", area: "Area 4" }, { kota: "Kab. Ogan Komering Ulu Selatan", area: "Area 4" }, { kota: "Kab. Ogan Komering Ulu", area: "Area 4" }, { kota: "Kab. Musi Rawas", area: "Area 4" }, { kota: "Kab. Musi Rawas Utara", area: "Area 4" }, { kota: "Kab. Empat Lawang", area: "Area 4" }, { kota: "Kota Pagar Alam", area: "Area 4" }, { kota: "Kota Lubuk Linggau", area: "Area 4" }, { kota: "Kab. Musi Banyuasin", area: "Area 4" }, { kota: "Kab. Muara Enim", area: "Area 4" }, { kota: "Kab. Lahat", area: "Area 4" }, { kota: "Kota Prabumulih", area: "Area 4" },
-            { kota: "Kab. Karo", area: "Area 2" }, { kota: "Kota Medan", area: "Area 2" }, { kota: "Kab. Dairi", area: "Area 2" },
-            { kota: "Kota Binjai", area: "Area 3" }, { kota: "Kota Tebing Tinggi", area: "Area 3" }, { kota: "Kab. Serdang Bedagai", area: "Area 3" }, { kota: "Kab. Langkat", area: "Area 3" }, { kota: "Kab. Deli Serdang", area: "Area 3" }, { kota: "Kab. Batu Bara", area: "Area 3" }, { kota: "Kota Tanjung Balai", area: "Area 3" }, { kota: "Kab. Asahan", area: "Area 3" }, { kota: "Kota Gunungsitoli", area: "Area 3" }, { kota: "Kab. Nias Barat", area: "Area 3" }, { kota: "Kab. Nias Selatan", area: "Area 3" }, { kota: "Kab. Nias Utara", area: "Area 3" },
-            { kota: "Kab. Pakpak Bharat", area: "Area 4" }, { kota: "Kab. Mandailing Natal", area: "Area 4" }, { kota: "Kab. Padang Lawas", area: "Area 4" }, { kota: "Kab. Labuhanbatu Utara", area: "Area 4" }, { kota: "Kota Padangsidimpuan", area: "Area 4" }, { kota: "Kab. Tapanuli Selatan", area: "Area 4" }, { kota: "Kab. Labuhanbatu Selatan", area: "Area 4" }, { kota: "Kab. Labuhanbatu", area: "Area 4" }, { kota: "Kab. Tapanuli Utara", area: "Area 4" }, { kota: "Kab. Padang Lawas Utara", area: "Area 4" }, { kota: "Kab. Humbang Hasundutan", area: "Area 4" }, { kota: "Kab. Simalungun", area: "Area 4" }, { kota: "Kab. Toba Samosir", area: "Area 4" }, { kota: "Kota Pematangsiantar", area: "Area 4" }, { kota: "Kab. Tapanuli Tengah", area: "Area 4" }, { kota: "Kab. Samosir", area: "Area 4" }, { kota: "Kota Sibolga", area: "Area 4" }, { kota: "Kab. Nias", area: "Area 4" },
-            { kota: "Kab. Sekadau", area: "Area 4" }, { kota: "Kab. Kapuas Hulu", area: "Area 4" }, { kota: "Kab. Sintang", area: "Area 4" }, { kota: "Kab. Bengkayang", area: "Area 4" }, { kota: "Kab. Melawi", area: "Area 4" }, { kota: "Kab. Sambas", area: "Area 4" }, { kota: "Kab. Sanggau", area: "Area 4" }, { kota: "Kab. Kubu Raya", area: "Area 4" }, { kota: "Kota Pontianak", area: "Area 4" }, { kota: "Kab. Kayong Utara", area: "Area 4" }, { kota: "Kab. Landak", area: "Area 4" }, { kota: "Kab. Mempawah", area: "Area 4" }, { kota: "Kota Singkawang", area: "Area 4" }, { kota: "Kab. Ketapang", area: "Area 4" },
-            { kota: "Kab. Hulu Sungai Tengah", area: "Area 2" }, { kota: "Kab. Tapin", area: "Area 2" }, { kota: "Kab. Hulu Sungai Utara", area: "Area 2" }, { kota: "Kab. Tabalong", area: "Area 2" }, { kota: "Kota Banjarmasin", area: "Area 2" }, { kota: "Kab. Banjar", area: "Area 2" }, { kota: "Kab. Tanah Bumbu", area: "Area 2" }, { kota: "Kota Banjarbaru", area: "Area 2" }, { kota: "Kab. Hulu Sungai Selatan", area: "Area 2" },
-            { kota: "Kab. Balangan", area: "Area 3" }, { kota: "Kab. Barito Kuala", area: "Area 3" }, { kota: "Kab. Tanah Laut", area: "Area 3" }, { kota: "Kab. Kotabaru", area: "Area 3" },
-            { kota: "Kab. Kapuas", area: "Area 3" }, { kota: "Kab. Pulang Pisau", area: "Area 3" }, { kota: "Kota Palangkaraya", area: "Area 3" },
-            { kota: "Kab. Seruyan", area: "Area 4" }, { kota: "Kab. Kotawaringin Barat", area: "Area 4" }, { kota: "Kab. Katingan", area: "Area 4" }, { kota: "Kab. Kotawaringin Timur", area: "Area 4" }, { kota: "Kab. Sukamara", area: "Area 4" }, { kota: "Kab. Lamandau", area: "Area 4" }, { kota: "Kab. Murung Raya", area: "Area 4" }, { kota: "Kab. Barito Timur", area: "Area 4" }, { kota: "Kab. Barito Utara", area: "Area 4" }, { kota: "Kab. Barito Selatan", area: "Area 4" }, { kota: "Kab. Gunung Mas", area: "Area 4" },
-            { kota: "Kab. Penajam Paser Utara", area: "Area 4" }, { kota: "Kota Balikpapan", area: "Area 4" }, { kota: "Kab. Paser", area: "Area 4" }, { kota: "Kab. Kutai Kartanegara", area: "Area 4" }, { kota: "Kota Samarinda", area: "Area 4" }, { kota: "Kota Bontang", area: "Area 4" }, { kota: "Kab. Berau", area: "Area 4" }, { kota: "Kab. Kutai Timur", area: "Area 4" }, { kota: "Kab. Kutai Barat", area: "Area 4" }, { kota: "Kab. Mahakam Ulu", area: "Area 4" },
-            { kota: "Kab. Tana Tidung", area: "Area 4" }, { kota: "Kab. Malinau", area: "Area 4" }, { kota: "Kab. Bulungan", area: "Area 4" }, { kota: "Kota Tarakan", area: "Area 4" }, { kota: "Kab. Nunukan", area: "Area 4" },
-            { kota: "Kab. Pahuwato", area: "Area 4" }, { kota: "Kab. Boalemo", area: "Area 4" }, { kota: "Kab. Gorontalo", area: "Area 4" }, { kota: "Kota Gorontalo", area: "Area 4" }, { kota: "Kab. Gorontalo Utara", area: "Area 4" }, { kota: "Kab. Bone Bolango", area: "Area 4" },
-            { kota: "Kab. Mamuju Tengah", area: "Area 2" },
-            { kota: "Kab. Majene", area: "Area 3" }, { kota: "Kab. Polewali Mandar", area: "Area 3" }, { kota: "Kab. Mamuju Utara", area: "Area 3" },
-            { kota: "Kab. Mamuju", area: "Area 4" }, { kota: "Kab. Mamasa", area: "Area 4" },
-            { kota: "Kab. Barru", area: "Area 2" }, { kota: "Kota Pare Pare", area: "Area 2" }, { kota: "Kab. Pinrang", area: "Area 2" },
-            { kota: "Kab. Sinjai", area: "Area 3" }, { kota: "Kab. Enrekang", area: "Area 3" }, { kota: "Kab. Sidenreng Rappang", area: "Area 3" }, { kota: "Kab. Luwu Timur", area: "Area 3" }, { kota: "Kab. Soppeng", area: "Area 3" }, { kota: "Kab. Tana Toraja", area: "Area 3" },
-            { kota: "Kab. Kepulauan Selayar", area: "Area 4" }, { kota: "Kab. Takalar", area: "Area 4" }, { kota: "Kab. Jeneponto", area: "Area 4" }, { kota: "Kab. Bulukumba", area: "Area 4" }, { kota: "Kab. Pangkajene Kepulauan", area: "Area 4" }, { kota: "Kota Makassar", area: "Area 4" }, { kota: "Kab. Gowa", area: "Area 4" }, { kota: "Kab. Maros", area: "Area 4" }, { kota: "Kab. Bone", area: "Area 4" }, { kota: "Kab. Wajo", area: "Area 4" }, { kota: "Kab. Luwu", area: "Area 4" }, { kota: "Kab. Luwu Utara", area: "Area 4" }, { kota: "Kota Palopo", area: "Area 4" }, { kota: "Kab. Toraja Utara", area: "Area 4" },
-            { kota: "Kab. Banggai Kepulauan", area: "Area 3" }, { kota: "Kab. Banggai Laut", area: "Area 3" }, { kota: "Kota Palu", area: "Area 3" }, { kota: "Kab. Toli Toli", area: "Area 3" }, { kota: "Kab. Tojo Una Una", area: "Area 3" }, { kota: "Kab. Morowali", area: "Area 3" }, { kota: "Kab. Morowali Utara", area: "Area 3" },
-            { kota: "Kab. Banggai", area: "Area 4" }, { kota: "Kab. Parigi Moutong", area: "Area 4" }, { kota: "Kab. Donggala", area: "Area 4" }, { kota: "Kab. Sigi", area: "Area 4" }, { kota: "Kab. Poso", area: "Area 4" }, { kota: "Kab. Buol", area: "Area 4" },
-            { kota: "Kab. Konawe Kepulauan", area: "Area 2" }, { kota: "Kab. Konawe Utara", area: "Area 2" }, { kota: "Kab. Buton Utara", area: "Area 2" }, { kota: "Kab. Wakatobi", area: "Area 2" },
-            { kota: "Kota Bau Bau", area: "Area 3" }, { kota: "Kab. Muna", area: "Area 3" }, { kota: "Kab. Buton Selatan", area: "Area 3" }, { kota: "Kab. Buton Tengah", area: "Area 3" }, { kota: "Kab. Muna Barat", area: "Area 3" },
-            { kota: "Kab. Kolaka", area: "Area 4" }, { kota: "Kab. Kolaka Utara", area: "Area 4" }, { kota: "Kab. Konawe", area: "Area 4" }, { kota: "Kab. Konawe Selatan", area: "Area 4" }, { kota: "Kota Kendari", area: "Area 4" }, { kota: "Kab. Kolaka Timur", area: "Area 4" }, { kota: "Kab. Buton", area: "Area 4" }, { kota: "Kab. Bombana", area: "Area 4" },
-            { kota: "Kab. Bolaang Mongondow", area: "Area 4" }, { kota: "Kab. Bolaang Mongondow Selatan", area: "Area 4" }, { kota: "Kota Kotamobagu", area: "Area 4" }, { kota: "Kab. Minahasa Selatan", area: "Area 4" }, { kota: "Kab. Bolaang Mongondow Timur", area: "Area 4" }, { kota: "Kab. Minahasa Tenggara", area: "Area 4" }, { kota: "Kab. Bolaang Mongondow Utara", area: "Area 4" }, { kota: "Kota Tomohon", area: "Area 4" }, { kota: "Kab. Minahasa", area: "Area 4" }, { kota: "Kota Manado", area: "Area 4" }, { kota: "Kab. Minahasa Utara", area: "Area 4" }, { kota: "Kota Bitung", area: "Area 4" }, { kota: "Kab. Kepulauan Sangihe", area: "Area 4" }, { kota: "Kab. Kepulauan Talaud", area: "Area 4" }, { kota: "Kab. Siau Tagulandang Biaro", area: "Area 4" },
-            { kota: "Kab. Jembrana", area: "Area 1" }, { kota: "Kab. Buleleng", area: "Area 1" },
-            { kota: "Kab. Badung", area: "Area 2" }, { kota: "Kab. Karangasem", area: "Area 2" }, { kota: "Kab. Tabanan", area: "Area 2" }, { kota: "Kab. Bangli", area: "Area 2" }, { kota: "Kab. Gianyar", area: "Area 2" }, { kota: "Kab. Klungkung", area: "Area 2" }, { kota: "Kota Denpasar", area: "Area 2" },
-            { kota: "Kab. Lombok Barat", area: "Area 2" }, { kota: "Kab. Lombok Timur", area: "Area 2" }, { kota: "Kota Mataram", area: "Area 2" }, { kota: "Kab. Lombok Tengah", area: "Area 2" }, { kota: "Kab. Lombok Utara", area: "Area 2" }, { kota: "Kab. Sumbawa Barat", area: "Area 2" }, { kota: "Kab. Sumbawa", area: "Area 2" }, { kota: "Kota Bima", area: "Area 2" }, { kota: "Kab. Dompu", area: "Area 2" },
-            { kota: "Kab. Bima", area: "Area 4" },
-            { kota: "Kab. Alor", area: "Area 4" }, { kota: "Kota Kupang", area: "Area 4" }, { kota: "Kab. Kupang", area: "Area 4" }, { kota: "Kab. Malaka", area: "Area 4" }, { kota: "Kab. Manggarai Barat", area: "Area 4" }, { kota: "Kab. Timor Tengah Selatan", area: "Area 4" }, { kota: "Kab. Belu", area: "Area 4" }, { kota: "Kab. Sikka", area: "Area 4" }, { kota: "Kab. Timor Tengah Utara", area: "Area 4" }, { kota: "Kab. Lembata", area: "Area 4" }, { kota: "Kab. Manggarai Timur", area: "Area 4" }, { kota: "Kab. Ende", area: "Area 4" }, { kota: "Kab. Sumba Barat Daya", area: "Area 4" }, { kota: "Kab. Rote Ndao", area: "Area 4" }, { kota: "Kab. Nagekeo", area: "Area 4" }, { kota: "Kab. Flores Timur", area: "Area 4" }, { kota: "Kab. Ngada", area: "Area 4" }, { kota: "Kab. Sumba Tengah", area: "Area 4" }, { kota: "Kab. Manggarai", area: "Area 4" }, { kota: "Kab. Sumba Barat", area: "Area 4" }, { kota: "Kab. Sumba Timur", area: "Area 4" }, { kota: "Kab. Sabu Raijua", area: "Area 4" },
-            { kota: "Kab. Maluku Tenggara Barat", area: "Area 1" }, { kota: "Kab. Kepulauan Aru", area: "Area 1" }, { kota: "Kota Tual", area: "Area 1" }, { kota: "Kab. Seram Bagian Barat", area: "Area 1" }, { kota: "Kab. Maluku Tengah", area: "Area 1" }, { kota: "Kab. Seram Bagian Timur", area: "Area 1" }, { kota: "Kota Ambon", area: "Area 1" }, { kota: "Kab. Maluku Tenggara", area: "Area 1" }, { kota: "Kab. Maluku Barat Daya", area: "Area 1" }, { kota: "Kab. Buru Selatan", area: "Area 1" }, { kota: "Kab. Buru", area: "Area 1" },
-            { kota: "Kab. Halmahera Barat", area: "Area 1" }, { kota: "Kab. Halmahera Utara", area: "Area 1" }, { kota: "Kab. Kepulauan Sula", area: "Area 1" }, { kota: "Kab. Halmahera Timur", area: "Area 1" }, { kota: "Kab. Pulau Taliabu", area: "Area 1" }, { kota: "Kab. Halmahera Selatan", area: "Area 1" }, { kota: "Kota Tidore Kepulauan", area: "Area 1" }, { kota: "Kota Ternate", area: "Area 1" }, { kota: "Kab. Halmahera Tengah", area: "Area 1" }, { kota: "Kab. Pulau Morotai", area: "Area 1" },
-            { kota: "Kab. Asmat", area: "Area 1" }, { kota: "Kab. Jayapura", area: "Area 1" }, { kota: "Kab. Mimika", area: "Area 1" }, { kota: "Kab. Keerom", area: "Area 1" }, { kota: "Kab. Biak Numfor", area: "Area 1" }, { kota: "Kota Jayapura", area: "Area 1" }, { kota: "Kab. Kepulauan Yapen", area: "Area 1" }, { kota: "Kab. Boven Digoel", area: "Area 1" }, { kota: "Kab. Merauke", area: "Area 1" }, { kota: "Kab. Deiyai", area: "Area 1" }, { kota: "Kab. Dogiyai", area: "Area 1" }, { kota: "Kab. Intan Jaya", area: "Area 1" }, { kota: "Kab. Jayawijaya", area: "Area 1" }, { kota: "Kab. Lanny Jaya", area: "Area 1" }, { kota: "Kab. Mamberamo Raya", area: "Area 1" }, { kota: "Kab. Mamberamo Tengah", area: "Area 1" }, { kota: "Kab. Mappi", area: "Area 1" }, { kota: "Kab. Nabire", area: "Area 1" }, { kota: "Kab. Nduga", area: "Area 1" }, { kota: "Kab. Paniai", area: "Area 1" }, { kota: "Kab. Pegunungan Bintang", area: "Area 1" }, { kota: "Kab. Puncak", area: "Area 1" }, { kota: "Kab. Puncak Jaya", area: "Area 1" }, { kota: "Kab. Sarmi", area: "Area 1" }, { kota: "Kab. Supiori", area: "Area 1" }, { kota: "Kab. Tolikara", area: "Area 1" }, { kota: "Kab. Waropen", area: "Area 1" }, { kota: "Kab. Yahukimo", area: "Area 1" }, { kota: "Kab. Yalimo", area: "Area 1" },
-            { kota: "Kab. Teluk Bintuni", area: "Area 1" }, { kota: "Kab. Sorong Selatan", area: "Area 1" }, { kota: "Kab. Sorong", area: "Area 1" }, { kota: "Kab. Teluk Wondama", area: "Area 1" }, { kota: "Kota Sorong", area: "Area 1" }, { kota: "Kab. Manokwari", area: "Area 1" }, { kota: "Kab. Fak Fak", area: "Area 1" }, { kota: "Kab. Kaimana", area: "Area 1" }, { kota: "Kab. Manokwari Selatan", area: "Area 1" }, { kota: "Kab. Maybrat", area: "Area 1" }, { kota: "Kab. Pegunungan Arfak", area: "Area 1" }, { kota: "Kab. Raja Ampat", area: "Area 1" }, { kota: "Kab. Tambrauw", area: "Area 1" }
-        ];
-        // --- AKHIR DATA AREA ---
-        
         document.addEventListener('DOMContentLoaded', function() {
             // --- PENGATURAN ---
             
             // ! PENTING: Ganti URL ini dengan URL Web App dari Google Apps Script Anda
-            const api_url = "https://script.google.com/macros/s/AKfycbwu_y7h1gJUWQuXTtRXxHj4ISbjeq96b2-j2t3uRyEoH21E4br3jHDWsVLMsIMlq5j2/exec";
+            const api_url = "https://script.google.com/macros/s/AKfycbxkZSjj7YATtK_Oeokbc_wZFBynJ1pNCU9_zbl1vhU6pqYmkvLrmde0j4GyBZEtKISK/exec";
             
-            const waNumber = "+6281234567890"; // Ganti dengan nomor WA Anda
+            const waNumber = "+6285156896021"; // Ganti dengan nomor WA Anda
             const itemsPerPage = 8; // Tampilkan 8 item per halaman
             
-            // Helper Ikon (sama seperti sebelumnya)
+            // --- *** DATA AREA BARU *** ---
+            const areaData = [
+                { kota: "Kota Tangerang Selatan", area: "Area 2" }, { kota: "Kota Tangerang", area: "Area 2" }, { kota: "Kab. Tangerang", area: "Area 2" }, { kota: "Kab. Pandeglang", area: "Area 2" }, { kota: "Kab. Lebak", area: "Area 2" }, { kota: "Kab. Serang", area: "Area 2" }, { kota: "Kota Serang", area: "Area 2" }, { kota: "Kota Cilegon", area: "Area 2" },
+                { kota: "Kab. Kulon Progo", area: "Area 1" }, { kota: "Kota Yogyakarta", area: "Area 1" }, { kota: "Kab. Sleman", area: "Area 1" }, { kota: "Kab. Bantul", area: "Area 1" }, { kota: "Kab. Gunungkidul", area: "Area 1" },
+                { kota: "Kota Jakarta Pusat", area: "Area 2" }, { kota: "Kota Jakarta Selatan", area: "Area 2" }, { kota: "Kota Jakarta Barat", area: "Area 2" }, { kota: "Kota Jakarta Timur", area: "Area 2" }, { kota: "Kota Jakarta Utara", area: "Area 2" },
+                { kota: "Kab. Kepulauan Seribu", area: "Area 3" },
+                { kota: "Kab. Bandung", area: "Area 1" }, { kota: "Kab. Kuningan", area: "Area 1" }, { kota: "Kab. Purwakarta", area: "Area 1" }, { kota: "Kota Bandung", area: "Area 1" },
+                { kota: "Kab. Bandung Barat", area: "Area 2" }, { kota: "Kota Cimahi", area: "Area 2" }, { kota: "Kab. Cirebon", area: "Area 2" }, { kota: "Kota Cirebon", area: "Area 2" }, { kota: "Kab. Indramayu", area: "Area 2" }, { kota: "Kab. Subang", area: "Area 2" },
+                { kota: "Kab. Bogor", area: "Area 3" }, { kota: "Kota Bogor", area: "Area 3" }, { kota: "Kota Depok", area: "Area 3" }, { kota: "Kota Bekasi", area: "Area 3" }, { kota: "Kota Banjar", area: "Area 3" }, { kota: "Kab. Ciamis", area: "Area 3" }, { kota: "Kota Tasikmalaya", area: "Area 3" }, { kota: "Kab. Majalengka", area: "Area 3" }, { kota: "Kab. Sumedang", area: "Area 3" }, { kota: "Kab. Bekasi", area: "Area 3" }, { kota: "Kab. Tasikmalaya", area: "Area 3" }, { kota: "Kab. Garut", area: "Area 3" },
+                { kota: "Kab. Cianjur", area: "Area 4" }, { kota: "Kab. Pangandaran", area: "Area 4" }, { kota: "Kab. Karawang", area: "Area 4" }, { kota: "Kota Sukabumi", area: "Area 4" }, { kota: "Kab. Sukabumi", area: "Area 4" },
+                { kota: "Kab. Tegal", area: "Area 2" }, { kota: "Kota Surakarta", area: "Area 2" }, { kota: "Kota Tegal", area: "Area 2" }, { kota: "Kab. Brebes", area: "Area 2" }, { kota: "Kab. Kebumen", area: "Area 2" }, { kota: "Kab. Pemalang", area: "Area 2" }, { kota: "Kota Semarang", area: "Area 2" },
+                { kota: "Kab. Boyolali", area: "Area 3" }, { kota: "Kota Salatiga", area: "Area 3" }, { kota: "Kab. Semarang", area: "Area 3" }, { kota: "Kab. Cilacap", area: "Area 3" }, { kota: "Kab. Grobogan", area: "Area 3" }, { kota: "Kab. Kendal", area: "Area 3" }, { kota: "Kab. Rembang", area: "Area 3" },
+                { kota: "Kota Pekalongan", area: "Area 4" }, { kota: "Kab. Pekalongan", area: "Area 4" }, { kota: "Kab. Batang", area: "Area 4" }, { kota: "Kab. Purbalingga", area: "Area 4" }, { kota: "Kab. Kudus", area: "Area 4" }, { kota: "Kab. Sukoharjo", area: "Area 4" }, { kota: "Kab. Klaten", area: "Area 4" }, { kota: "Kota Magelang", area: "Area 4" }, { kota: "Kab. Banyumas", area: "Area 4" }, { kota: "Kab. Magelang", area: "Area 4" }, { kota: "Kab. Temanggung", area: "Area 4" }, { kota: "Kab. Sragen", area: "Area 4" }, { kota: "Kab. Banjarnegara", area: "Area 4" }, { kota: "Kab. Karanganyar", area: "Area 4" }, { kota: "Kab. Wonosobo", area: "Area 4" }, { kota: "Kab. Jepara", area: "Area 4" }, { kota: "Kab. Demak", area: "Area 4" }, { kota: "Kab. Purworejo", area: "Area 4" }, { kota: "Kab. Blora", area: "Area 4" }, { kota: "Kab. Wonogiri", area: "Area 4" }, { kota: "Kab. Pati", area: "Area 4" },
+                { kota: "Kota Probolinggo", area: "Area 2" }, { kota: "Kab. Bangkalan", area: "Area 2" }, { kota: "Kab. Sidoarjo", area: "Area 2" }, { kota: "Kab. Banyuwangi", area: "Area 2" }, { kota: "Kota Surabaya", area: "Area 2" }, { kota: "Kab. Sampang", area: "Area 2" }, { kota: "Kab. Pamekasan", area: "Area 2" }, { kota: "Kab. Sumenep", area: "Area 2" }, { kota: "Kab. Pacitan", area: "Area 2" },
+                { kota: "Kab. Lumajang", area: "Area 3" }, { kota: "Kab. Probolinggo", area: "Area 3" },
+                { kota: "Kab. Jombang", area: "Area 4" }, { kota: "Kota Blitar", area: "Area 4" }, { kota: "Kab. Blitar", area: "Area 4" }, { kota: "Kota Kediri", area: "Area 4" }, { kota: "Kab. Lamongan", area: "Area 4" }, { kota: "Kab. Kediri", area: "Area 4" }, { kota: "Kab. Ngawi", area: "Area 4" }, { kota: "Kab. Mojokerto", area: "Area 4" }, { kota: "Kota Mojokerto", area: "Area 4" }, { kota: "Kab. Magetan", area: "Area 4" }, { kota: "Kab. Gresik", area: "Area 4" }, { kota: "Kab. Tulungagung", area: "Area 4" }, { kota: "Kab. Nganjuk", area: "Area 4" }, { kota: "Kab. Pasuruan", area: "Area 4" }, { kota: "Kota Pasuruan", area: "Area 4" }, { kota: "Kab. Bojonegoro", area: "Area 4" }, { kota: "Kab. Madiun", area: "Area 4" }, { kota: "Kab. Bondowoso", area: "Area 4" }, { kota: "Kab. Tuban", area: "Area 4" }, { kota: "Kota Madiun", area: "Area 4" }, { kota: "Kab. Situbondo", area: "Area 4" }, { kota: "Kab. Jember", area: "Area 4" }, { kota: "Kota Malang", area: "Area 4" }, { kota: "Kab. Malang", area: "Area 4" }, { kota: "Kab. Ponorogo", area: "Area 4" }, { kota: "Kota Batu", area: "Area 4" }, { kota: "Kab. Trenggalek", area: "Area 4" },
+                { kota: "Kab. Seluma", area: "Area 3" },
+                { kota: "Kab. Bengkulu Selatan", area: "Area 4" }, { kota: "Kab. Kaur", area: "Area 4" }, { kota: "Kab. Lebong", area: "Area 4" }, { kota: "Kab. Rejang Lebong", area: "Area 4" }, { kota: "Kab. Bengkulu Tengah", area: "Area 4" }, { kota: "Kota Bengkulu", area: "Area 4" }, { kota: "Kab. Bengkulu Utara", area: "Area 4" }, { kota: "Kab. Kepahiang", area: "Area 4" }, { kota: "Kab. Muko Muko", area: "Area 4" },
+                { kota: "Kab. Batanghari", area: "Area 3" }, { kota: "Kota Jambi", area: "Area 3" }, { kota: "Kab. Tanjung Jabung Barat", area: "Area 3" }, { kota: "Kab. Muaro Jambi", area: "Area 3" }, { kota: "Kab. Sarolangun", area: "Area 3" },
+                { kota: "Kab. Tanjung Jabung Timur", area: "Area 4" }, { kota: "Kab. Kerinci", area: "Area 4" }, { kota: "Kab. Bungo", area: "Area 4" }, { kota: "Kab. Tebo", area: "Area 4" }, { kota: "Kab. Merangin", area: "Area 4" }, { kota: "Kota Sungai Penuh", area: "Area 4" },
+                { kota: "Kab. Bangka Selatan", area: "Area 2" }, { kota: "Kota Pangkal Pinang", area: "Area 2" }, { kota: "Kab. Belitung", area: "Area 2" }, { kota: "Kab. Belitung Timur", area: "Area 2" },
+                { kota: "Kab. Bangka", area: "Area 3" }, { kota: "Kab. Bangka Tengah", area: "Area 3" }, { kota: "Kab. Bangka Barat", area: "Area 3" },
+                { kota: "Kota Batam", area: "Area 2" },
+                { kota: "Kab. Karimun", area: "Area 3" }, { kota: "Kab. Bintan", area: "Area 3" }, { kota: "Kota Tanjung Pinang", area: "Area 3" },
+                { kota: "Kab. Lingga", area: "Area 4" }, { kota: "Kab. Kepulauan Anambas", area: "Area 4" }, { kota: "Kab. Natuna", area: "Area 4" },
+                { kota: "Kab. Lampung Tengah", area: "Area 3" }, { kota: "Kab. Pringsewu", area: "Area 3" }, { kota: "Kota Metro", area: "Area 3" }, { kota: "Kab. Pesawaran", area: "Area 3" }, { kota: "Kab. Lampung Selatan", area: "Area 3" }, { kota: "Kota Bandar Lampung", area: "Area 3" },
+                { kota: "Kab. Lampung Barat", area: "Area 4" }, { kota: "Kab. Lampung Timur", area: "Area 4" }, { kota: "Kab. Tulang Bawang Barat", area: "Area 4" }, { kota: "Kab. Way Kanan", area: "Area 4" }, { kota: "Kab. Tulang Bawang", area: "Area 4" }, { kota: "Kab. Tanggamus", area: "Area 4" }, { kota: "Kab. Pesisir Barat", area: "Area 4" }, { kota: "Kab. Lampung Utara", area: "Area 4" }, { kota: "Kab. Mesuji", area: "Area 4" },
+                { kota: "Kab. Aceh Barat Daya", area: "Area 2" }, { kota: "Kab. Aceh Besar", area: "Area 2" }, { kota: "Kota Sabang", area: "Area 2" }, { kota: "Kab. Gayo Lues", area: "Area 2" },
+                { kota: "Kab. Aceh Jaya", area: "Area 3" }, { kota: "Kab. Aceh Selatan", area: "Area 3" }, { kota: "Kab. Aceh Tenggara", area: "Area 3" }, { kota: "Kab. Nagan Raya", area: "Area 3" }, { kota: "Kota Banda Aceh", area: "Area 3" },
+                { kota: "Kab. Aceh Barat", area: "Area 4" }, { kota: "Kab. Aceh Singkil", area: "Area 4" }, { kota: "Kab. Aceh Tamiang", area: "Area 4" }, { kota: "Kab. Aceh Tengah", area: "Area 4" }, { kota: "Kota Subulussalam", area: "Area 4" }, { kota: "Kab. Bener Meriah", area: "Area 4" }, { kota: "Kab. Aceh Utara", area: "Area 4" }, { kota: "Kota Lhokseumawe", area: "Area 4" }, { kota: "Kab. Pidie", area: "Area 4" }, { kota: "Kab. Aceh Timur", area: "Area 4" }, { kota: "Kab. Simeulue", area: "Area 4" }, { kota: "Kota Langsa", area: "Area 4" }, { kota: "Kab. Bireuen", area: "Area 4" }, { kota: "Kab. Pidie Jaya", area: "Area 4" },
+                { kota: "Kota Pekanbaru", area: "Area 2" },
+                { kota: "Kab. Kuantan Singingi", area: "Area 3" }, { kota: "Kab. Pelalawan", area: "Area 3" }, { kota: "Kab. Kampar", area: "Area 3" }, { kota: "Kab. Siak", area: "Area 3" }, { kota: "Kota Dumai", area: "Area 3" }, { kota: "Kab. Rokan Hilir", area: "Area 3" }, { kota: "Kab. Indragiri Hulu", area: "Area 3" }, { kota: "Kab. Kepulauan Meranti", area: "Area 3" }, { kota: "Kab. Bengkalis", area: "Area 3" },
+                { kota: "Kab. Rokan Hulu", area: "Area 4" }, { kota: "Kab. Indragiri Hilir", area: "Area 4" },
+                { kota: "Kab. Kepulauan Mentawai", area: "Area 2" },
+                { kota: "Kota Payakumbuh", area: "Area 3" }, { kota: "Kota Padang Panjang", area: "Area 3" }, { kota: "Kab. Sijunjung", area: "Area 3" }, { kota: "Kab. Padang Pariaman", area: "Area 3" }, { kota: "Kota Padang", area: "Area 3" }, { kota: "Kab. Solok Selatan", area: "Area 3" },
+                { kota: "Kab. Pasaman Barat", area: "Area 4" }, { kota: "Kab. Pasaman", area: "Area 4" }, { kota: "Kab. Lima Puluh Kota", area: "Area 4" }, { kota: "Kab. Tanah Datar", area: "Area 4" }, { kota: "Kab. Dharmasraya", area: "Area 4" }, { kota: "Kota Solok", area: "Area 4" }, { kota: "Kab. Agam", area: "Area 4" }, { kota: "Kab. Solok", area: "Area 4" }, { kota: "Kota Bukittinggi", area: "Area 4" }, { kota: "Kota Pariaman", area: "Area 4" }, { kota: "Kota Sawahlunto", area: "Area 4" }, { kota: "Kab. Pesisir Selatan", area: "Area 4" },
+                { kota: "Kab. Ogan Komering Ilir", area: "Area 3" }, { kota: "Kab. Penukal Abab Lematang Ilir", area: "Area 3" }, { kota: "Kab. Banyuasin", area: "Area 3" }, { kota: "Kota Palembang", area: "Area 3" }, { kota: "Kab. Ogan Ilir", area: "Area 3" },
+                { kota: "Kab. Ogan Komering Ulu Timur", area: "Area 4" }, { kota: "Kab. Ogan Komering Ulu Selatan", area: "Area 4" }, { kota: "Kab. Ogan Komering Ulu", area: "Area 4" }, { kota: "Kab. Musi Rawas", area: "Area 4" }, { kota: "Kab. Musi Rawas Utara", area: "Area 4" }, { kota: "Kab. Empat Lawang", area: "Area 4" }, { kota: "Kota Pagar Alam", area: "Area 4" }, { kota: "Kota Lubuk Linggau", area: "Area 4" }, { kota: "Kab. Musi Banyuasin", area: "Area 4" }, { kota: "Kab. Muara Enim", area: "Area 4" }, { kota: "Kab. Lahat", area: "Area 4" }, { kota: "Kota Prabumulih", area: "Area 4" },
+                { kota: "Kab. Karo", area: "Area 2" }, { kota: "Kota Medan", area: "Area 2" }, { kota: "Kab. Dairi", area: "Area 2" },
+                { kota: "Kota Binjai", area: "Area 3" }, { kota: "Kota Tebing Tinggi", area: "Area 3" }, { kota: "Kab. Serdang Bedagai", area: "Area 3" }, { kota: "Kab. Langkat", area: "Area 3" }, { kota: "Kab. Deli Serdang", area: "Area 3" }, { kota: "Kab. Batu Bara", area: "Area 3" }, { kota: "Kota Tanjung Balai", area: "Area 3" }, { kota: "Kab. Asahan", area: "Area 3" }, { kota: "Kota Gunungsitoli", area: "Area 3" }, { kota: "Kab. Nias Barat", area: "Area 3" }, { kota: "Kab. Nias Selatan", area: "Area 3" }, { kota: "Kab. Nias Utara", area: "Area 3" },
+                { kota: "Kab. Pakpak Bharat", area: "Area 4" }, { kota: "Kab. Mandailing Natal", area: "Area 4" }, { kota: "Kab. Padang Lawas", area: "Area 4" }, { kota: "Kab. Labuhanbatu Utara", area: "Area 4" }, { kota: "Kota Padangsidimpuan", area: "Area 4" }, { kota: "Kab. Tapanuli Selatan", area: "Area 4" }, { kota: "Kab. Labuhanbatu Selatan", area: "Area 4" }, { kota: "Kab. Labuhanbatu", area: "Area 4" }, { kota: "Kab. Tapanuli Utara", area: "Area 4" }, { kota: "Kab. Padang Lawas Utara", area: "Area 4" }, { kota: "Kab. Humbang Hasundutan", area: "Area 4" }, { kota: "Kab. Simalungun", area: "Area 4" }, { kota: "Kab. Toba Samosir", area: "Area 4" }, { kota: "Kota Pematangsiantar", area: "Area 4" }, { kota: "Kab. Tapanuli Tengah", area: "Area 4" }, { kota: "Kab. Samosir", area: "Area 4" }, { kota: "Kota Sibolga", area: "Area 4" }, { kota: "Kab. Nias", area: "Area 4" },
+                { kota: "Kab. Sekadau", area: "Area 4" }, { kota: "Kab. Kapuas Hulu", area: "Area 4" }, { kota: "Kab. Sintang", area: "Area 4" }, { kota: "Kab. Bengkayang", area: "Area 4" }, { kota: "Kab. Melawi", area: "Area 4" }, { kota: "Kab. Sambas", area: "Area 4" }, { kota: "Kab. Sanggau", area: "Area 4" }, { kota: "Kab. Kubu Raya", area: "Area 4" }, { kota: "Kota Pontianak", area: "Area 4" }, { kota: "Kab. Kayong Utara", area: "Area 4" }, { kota: "Kab. Landak", area: "Area 4" }, { kota: "Kab. Mempawah", area: "Area 4" }, { kota: "Kota Singkawang", area: "Area 4" }, { kota: "Kab. Ketapang", area: "Area 4" },
+                { kota: "Kab. Hulu Sungai Tengah", area: "Area 2" }, { kota: "Kab. Tapin", area: "Area 2" }, { kota: "Kab. Hulu Sungai Utara", area: "Area 2" }, { kota: "Kab. Tabalong", area: "Area 2" }, { kota: "Kota Banjarmasin", area: "Area 2" }, { kota: "Kab. Banjar", area: "Area 2" }, { kota: "Kab. Tanah Bumbu", area: "Area 2" }, { kota: "Kota Banjarbaru", area: "Area 2" }, { kota: "Kab. Hulu Sungai Selatan", area: "Area 2" },
+                { kota: "Kab. Balangan", area: "Area 3" }, { kota: "Kab. Barito Kuala", area: "Area 3" }, { kota: "Kab. Tanah Laut", area: "Area 3" }, { kota: "Kab. Kotabaru", area: "Area 3" },
+                { kota: "Kab. Kapuas", area: "Area 3" }, { kota: "Kab. Pulang Pisau", area: "Area 3" }, { kota: "Kota Palangkaraya", area: "Area 3" },
+                { kota: "Kab. Seruyan", area: "Area 4" }, { kota: "Kab. Kotawaringin Barat", area: "Area 4" }, { kota: "Kab. Katingan", area: "Area 4" }, { kota: "Kab. Kotawaringin Timur", area: "Area 4" }, { kota: "Kab. Sukamara", area: "Area 4" }, { kota: "Kab. Lamandau", area: "Area 4" }, { kota: "Kab. Murung Raya", area: "Area 4" }, { kota: "Kab. Barito Timur", area: "Area 4" }, { kota: "Kab. Barito Utara", area: "Area 4" }, { kota: "Kab. Barito Selatan", area: "Area 4" }, { kota: "Kab. Gunung Mas", area: "Area 4" },
+                { kota: "Kab. Penajam Paser Utara", area: "Area 4" }, { kota: "Kota Balikpapan", area: "Area 4" }, { kota: "Kab. Paser", area: "Area 4" }, { kota: "Kab. Kutai Kartanegara", area: "Area 4" }, { kota: "Kota Samarinda", area: "Area 4" }, { kota: "Kota Bontang", area: "Area 4" }, { kota: "Kab. Berau", area: "Area 4" }, { kota: "Kab. Kutai Timur", area: "Area 4" }, { kota: "Kab. Kutai Barat", area: "Area 4" }, { kota: "Kab. Mahakam Ulu", area: "Area 4" },
+                { kota: "Kab. Tana Tidung", area: "Area 4" }, { kota: "Kab. Malinau", area: "Area 4" }, { kota: "Kab. Bulungan", area: "Area 4" }, { kota: "Kota Tarakan", area: "Area 4" }, { kota: "Kab. Nunukan", area: "Area 4" },
+                { kota: "Kab. Pahuwato", area: "Area 4" }, { kota: "Kab. Boalemo", area: "Area 4" }, { kota: "Kab. Gorontalo", area: "Area 4" }, { kota: "Kota Gorontalo", area: "Area 4" }, { kota: "Kab. Gorontalo Utara", area: "Area 4" }, { kota: "Kab. Bone Bolango", area: "Area 4" },
+                { kota: "Kab. Mamuju Tengah", area: "Area 2" },
+                { kota: "Kab. Majene", area: "Area 3" }, { kota: "Kab. Polewali Mandar", area: "Area 3" }, { kota: "Kab. Mamuju Utara", area: "Area 3" },
+                { kota: "Kab. Mamuju", area: "Area 4" }, { kota: "Kab. Mamasa", area: "Area 4" },
+                { kota: "Kab. Barru", area: "Area 2" }, { kota: "Kota Pare Pare", area: "Area 2" }, { kota: "Kab. Pinrang", area: "Area 2" },
+                { kota: "Kab. Sinjai", area: "Area 3" }, { kota: "Kab. Enrekang", area: "Area 3" }, { kota: "Kab. Sidenreng Rappang", area: "Area 3" }, { kota: "Kab. Luwu Timur", area: "Area 3" }, { kota: "Kab. Soppeng", area: "Area 3" }, { kota: "Kab. Tana Toraja", area: "Area 3" },
+                { kota: "Kab. Kepulauan Selayar", area: "Area 4" }, { kota: "Kab. Takalar", area: "Area 4" }, { kota: "Kab. Jeneponto", area: "Area 4" }, { kota: "Kab. Bulukumba", area: "Area 4" }, { kota: "Kab. Pangkajene Kepulauan", area: "Area 4" }, { kota: "Kota Makassar", area: "Area 4" }, { kota: "Kab. Gowa", area: "Area 4" }, { kota: "Kab. Maros", area: "Area 4" }, { kota: "Kab. Bone", area: "Area 4" }, { kota: "Kab. Wajo", area: "Area 4" }, { kota: "Kab. Luwu", area: "Area 4" }, { kota: "Kab. Luwu Utara", area: "Area 4" }, { kota: "Kota Palopo", area: "Area 4" }, { kota: "Kab. Toraja Utara", area: "Area 4" },
+                { kota: "Kab. Banggai Kepulauan", area: "Area 3" }, { kota: "Kab. Banggai Laut", area: "Area 3" }, { kota: "Kota Palu", area: "Area 3" }, { kota: "Kab. Toli Toli", area: "Area 3" }, { kota: "Kab. Tojo Una Una", area: "Area 3" }, { kota: "Kab. Morowali", area: "Area 3" }, { kota: "Kab. Morowali Utara", area: "Area 3" },
+                { kota: "Kab. Banggai", area: "Area 4" }, { kota: "Kab. Parigi Moutong", area: "Area 4" }, { kota: "Kab. Donggala", area: "Area 4" }, { kota: "Kab. Sigi", area: "Area 4" }, { kota: "Kab. Poso", area: "Area 4" }, { kota: "Kab. Buol", area: "Area 4" },
+                { kota: "Kab. Konawe Kepulauan", area: "Area 2" }, { kota: "Kab. Konawe Utara", area: "Area 2" }, { kota: "Kab. Buton Utara", area: "Area 2" }, { kota: "Kab. Wakatobi", area: "Area 2" },
+                { kota: "Kota Bau Bau", area: "Area 3" }, { kota: "Kab. Muna", area: "Area 3" }, { kota: "Kab. Buton Selatan", area: "Area 3" }, { kota: "Kab. Buton Tengah", area: "Area 3" }, { kota: "Kab. Muna Barat", area: "Area 3" },
+                { kota: "Kab. Kolaka", area: "Area 4" }, { kota: "Kab. Kolaka Utara", area: "Area 4" }, { kota: "Kab. Konawe", area: "Area 4" }, { kota: "Kab. Konawe Selatan", area: "Area 4" }, { kota: "Kota Kendari", area: "Area 4" }, { kota: "Kab. Kolaka Timur", area: "Area 4" }, { kota: "Kab. Buton", area: "Area 4" }, { kota: "Kab. Bombana", area: "Area 4" },
+                { kota: "Kab. Bolaang Mongondow", area: "Area 4" }, { kota: "Kab. Bolaang Mongondow Selatan", area: "Area 4" }, { kota: "Kota Kotamobagu", area: "Area 4" }, { kota: "Kab. Minahasa Selatan", area: "Area 4" }, { kota: "Kab. Bolaang Mongondow Timur", area: "Area 4" }, { kota: "Kab. Minahasa Tenggara", area: "Area 4" }, { kota: "Kab. Bolaang Mongondow Utara", area: "Area 4" }, { kota: "Kota Tomohon", area: "Area 4" }, { kota: "Kab. Minahasa", area: "Area 4" }, { kota: "Kota Manado", area: "Area 4" }, { kota: "Kab. Minahasa Utara", area: "Area 4" }, { kota: "Kota Bitung", area: "Area 4" }, { kota: "Kab. Kepulauan Sangihe", area: "Area 4" }, { kota: "Kab. Kepulauan Talaud", area: "Area 4" }, { kota: "Kab. Siau Tagulandang Biaro", area: "Area 4" },
+                { kota: "Kab. Jembrana", area: "Area 1" }, { kota: "Kab. Buleleng", area: "Area 1" },
+                { kota: "Kab. Badung", area: "Area 2" }, { kota: "Kab. Karangasem", area: "Area 2" }, { kota: "Kab. Tabanan", area: "Area 2" }, { kota: "Kab. Bangli", area: "Area 2" }, { kota: "Kab. Gianyar", area: "Area 2" }, { kota: "Kab. Klungkung", area: "Area 2" }, { kota: "Kota Denpasar", area: "Area 2" },
+                { kota: "Kab. Lombok Barat", area: "Area 2" }, { kota: "Kab. Lombok Timur", area: "Area 2" }, { kota: "Kota Mataram", area: "Area 2" }, { kota: "Kab. Lombok Tengah", area: "Area 2" }, { kota: "Kab. Lombok Utara", area: "Area 2" }, { kota: "Kab. Sumbawa Barat", area: "Area 2" }, { kota: "Kab. Sumbawa", area: "Area 2" }, { kota: "Kota Bima", area: "Area 2" }, { kota: "Kab. Dompu", area: "Area 2" },
+                { kota: "Kab. Bima", area: "Area 4" },
+                { kota: "Kab. Alor", area: "Area 4" }, { kota: "Kota Kupang", area: "Area 4" }, { kota: "Kab. Kupang", area: "Area 4" }, { kota: "Kab. Malaka", area: "Area 4" }, { kota: "Kab. Manggarai Barat", area: "Area 4" }, { kota: "Kab. Timor Tengah Selatan", area: "Area 4" }, { kota: "Kab. Belu", area: "Area 4" }, { kota: "Kab. Sikka", area: "Area 4" }, { kota: "Kab. Timor Tengah Utara", area: "Area 4" }, { kota: "Kab. Lembata", area: "Area 4" }, { kota: "Kab. Manggarai Timur", area: "Area 4" }, { kota: "Kab. Ende", area: "Area 4" }, { kota: "Kab. Sumba Barat Daya", area: "Area 4" }, { kota: "Kab. Rote Ndao", area: "Area 4" }, { kota: "Kab. Nagekeo", area: "Area 4" }, { kota: "Kab. Flores Timur", area: "Area 4" }, { kota: "Kab. Ngada", area: "Area 4" }, { kota: "Kab. Sumba Tengah", area: "Area 4" }, { kota: "Kab. Manggarai", area: "Area 4" }, { kota: "Kab. Sumba Barat", area: "Area 4" }, { kota: "Kab. Sumba Timur", area: "Area 4" }, { kota: "Kab. Sabu Raijua", area: "Area 4" },
+                { kota: "Kab. Maluku Tenggara Barat", area: "Area 1" }, { kota: "Kab. Kepulauan Aru", area: "Area 1" }, { kota: "Kota Tual", area: "Area 1" }, { kota: "Kab. Seram Bagian Barat", area: "Area 1" }, { kota: "Kab. Maluku Tengah", area: "Area 1" }, { kota: "Kab. Seram Bagian Timur", area: "Area 1" }, { kota: "Kota Ambon", area: "Area 1" }, { kota: "Kab. Maluku Tenggara", area: "Area 1" }, { kota: "Kab. Maluku Barat Daya", area: "Area 1" }, { kota: "Kab. Buru Selatan", area: "Area 1" }, { kota: "Kab. Buru", area: "Area 1" },
+                { kota: "Kab. Halmahera Barat", area: "Area 1" }, { kota: "Kab. Halmahera Utara", area: "Area 1" }, { kota: "Kab. Kepulauan Sula", area: "Area 1" }, { kota: "Kab. Halmahera Timur", area: "Area 1" }, { kota: "Kab. Pulau Taliabu", area: "Area 1" }, { kota: "Kab. Halmahera Selatan", area: "Area 1" }, { kota: "Kota Tidore Kepulauan", area: "Area 1" }, { kota: "Kota Ternate", area: "Area 1" }, { kota: "Kab. Halmahera Tengah", area: "Area 1" }, { kota: "Kab. Pulau Morotai", area: "Area 1" },
+                { kota: "Kab. Asmat", area: "Area 1" }, { kota: "Kab. Jayapura", area: "Area 1" }, { kota: "Kab. Mimika", area: "Area 1" }, { kota: "Kab. Keerom", area: "Area 1" }, { kota: "Kab. Biak Numfor", area: "Area 1" }, { kota: "Kota Jayapura", area: "Area 1" }, { kota: "Kab. Kepulauan Yapen", area: "Area 1" }, { kota: "Kab. Boven Digoel", area: "Area 1" }, { kota: "Kab. Merauke", area: "Area 1" }, { kota: "Kab. Deiyai", area: "Area 1" }, { kota: "Kab. Dogiyai", area: "Area 1" }, { kota: "Kab. Intan Jaya", area: "Area 1" }, { kota: "Kab. Jayawijaya", area: "Area 1" }, { kota: "Kab. Lanny Jaya", area: "Area 1" }, { kota: "Kab. Mamberamo Raya", area: "Area 1" }, { kota: "Kab. Mamberamo Tengah", area: "Area 1" }, { kota: "Kab. Mappi", area: "Area 1" }, { kota: "Kab. Nabire", area: "Area 1" }, { kota: "Kab. Nduga", area: "Area 1" }, { kota: "Kab. Paniai", area: "Area 1" }, { kota: "Kab. Pegunungan Bintang", area: "Area 1" }, { kota: "Kab. Puncak", area: "Area 1" }, { kota: "Kab. Puncak Jaya", area: "Area 1" }, { kota: "Kab. Sarmi", area: "Area 1" }, { kota: "Kab. Supiori", area: "Area 1" }, { kota: "Kab. Tolikara", area: "Area 1" }, { kota: "Kab. Waropen", area: "Area 1" }, { kota: "Kab. Yahukimo", area: "Area 1" }, { kota: "Kab. Yalimo", area: "Area 1" },
+                { kota: "Kab. Teluk Bintuni", area: "Area 1" }, { kota: "Kab. Sorong Selatan", area: "Area 1" }, { kota: "Kab. Sorong", area: "Area 1" }, { kota: "Kab. Teluk Wondama", area: "Area 1" }, { kota: "Kota Sorong", area: "Area 1" }, { kota: "Kab. Manokwari", area: "Area 1" }, { kota: "Kab. Fak Fak", area: "Area 1" }, { kota: "Kab. Kaimana", area: "Area 1" }, { kota: "Kab. Manokwari Selatan", area: "Area 1" }, { kota: "Kab. Maybrat", area: "Area 1" }, { kota: "Kab. Pegunungan Arfak", area: "Area 1" }, { kota: "Kab. Raja Ampat", area: "Area 1" }, { kota: "Kab. Tambrauw", area: "Area 1" }
+            ];
+            // --- AKHIR DATA AREA ---
+            
+            // Helper Ikon
             const detailIcons = {
                 'Masa Aktif': '<svg class="h-4 w-4 text-gray-500 mr-2 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002 2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" /></svg>',
                 'Kuota Utama': '<svg class="h-4 w-4 text-gray-500 mr-2 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h12a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM4 11v4h12v-4H4z" /></svg>',
@@ -431,15 +509,20 @@
                 'xl': 'https://placehold.co/150x60/2E3191/FFFFFF?text=XL&font=inter',
                 'tri': 'https://placehold.co/150x60/A4000C/FFFFFF?text=TRI&font=inter',
                 'axis': 'https://placehold.co/150x60/8C0081/FFFFFF?text=AXIS&font=inter',
-                'xa': 'https://placehold.co/150x60/2E3191/FFFFFF?text=XL-AXIS&font=inter' // Ditambahkan
+                'xa': 'https://placehold.co/150x60/2E3191/FFFFFF?text=XL-AXIS&font=inter'
             };
             // --------------------
 
-            // --- FUNGSI HELPER BARU: Format Harga ---
+            // --- FUNGSI HELPER: Format Harga (Disempurnakan) ---
             function formatPrice(value) {
                 if (value === null || value === undefined) return '0';
+                // 1. Bersihkan string dari non-digit
                 const numberString = String(value).replace(/\D/g, '');
+                // 2. Ubah ke Angka
                 const number = Number(numberString);
+                // 3. PERUBAHAN: Tambahkan cek isNaN untuk keamanan
+                if (isNaN(number)) return '0';
+                // 4. Format ke standar Indonesia
                 return number.toLocaleString('id-ID');
             }
             // ----------------------------------------
@@ -452,8 +535,16 @@
             // --------------------
 
             // --- DOM Elements ---
+            // Elemen Sidebar
+            const menuToggleBtn = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+
+            // Elemen Konten Utama
             const filterButtons = document.querySelectorAll('.filter-btn');
             const grid = document.getElementById('product-grid');
+            const waHeaderButton = document.getElementById('wa-contact-header'); // ID ini sekarang ada di dalam sidebar
             const prevButton = document.getElementById('prev-button');
             const nextButton = document.getElementById('next-button');
             const pageIndicator = document.getElementById('page-indicator');
@@ -462,7 +553,7 @@
             const noResultsMessage = document.getElementById('no-results');
             const loadingIndicator = document.getElementById('loading-indicator');
             
-            // --- Elemen Modal Detail Produk ---
+            // Elemen Modal Detail Beli
             const modal = document.getElementById('detail-modal');
             const modalContentBox = document.getElementById('modal-content-box');
             const modalCloseButton = document.getElementById('modal-close-button');
@@ -473,20 +564,46 @@
             const modalBasePrice = document.getElementById('modal-base-price');
             const modalFee = document.getElementById('modal-fee');
             const modalTotalPrice = document.getElementById('modal-total-price');
-            
-            // --- DOM Elements BARU untuk Modal Area ---
-            const cekAreaButton = document.getElementById('cek-area-button');
+
+            // --- *** ELEMEN DOM BARU: Modal Area *** ---
+            const cekAreaLink = document.getElementById('cek-area-link');
             const areaModal = document.getElementById('area-modal');
             const areaModalContentBox = document.getElementById('area-modal-content-box');
-            const areaModalCloseButton = document.getElementById('area-modal-close-button');
+            const areaModalCloseBtn = document.getElementById('area-modal-close-button');
             const areaSearchInput = document.getElementById('area-search-input');
-            const areaResults = document.getElementById('area-results');
+            const areaResultsDisplay = document.getElementById('area-results-display');
+            const defaultAreaMessage = '<p class="text-slate-500">Silakan ketik nama kota atau kabupaten Anda di atas.</p>';
             // --------------------
+
+            
+            // --- FUNGSI HELPER: Filter Produk (Prinsip DRY) ---
+            function getFilteredProducts() {
+                return allProductData.filter(product => {
+                    // Logika Filter Provider
+                    let providerMatch = false;
+                    if (currentFilter === 'all') {
+                        providerMatch = true;
+                    } else if (currentFilter === 'xl') {
+                        providerMatch = (product.provider === 'xl' || product.provider === 'xa');
+                    } else if (currentFilter === 'axis') {
+                        providerMatch = (product.provider === 'axis' || product.provider === 'xa');
+                    }
+                    
+                    // Logika Search
+                    const searchTerm = currentSearchTerm.toLowerCase();
+                    const searchMatch = (
+                        product.nama.toLowerCase().includes(searchTerm) || 
+                        product.detail.toLowerCase().includes(searchTerm) ||
+                        product.provider.toLowerCase().includes(searchTerm)
+                    );
+
+                    return providerMatch && searchMatch;
+                });
+            }
 
             
             /**
              * FUNGSI: Menggambar Kartu Produk
-             * (Tidak ada perubahan di fungsi ini)
              */
             function generateCardHTML(product) {
                 const isClose = product.status === 'close';
@@ -519,12 +636,12 @@
 
                 return `
                 <div class="data-card card-enter" 
-                     data-status="${product.status}" 
-                     data-provider="${product.provider}" 
-                     data-nama="${product.nama}" 
-                     data-harga="${product.harga}"
-                     data-fee="${product.fee}" 
-                     data-detail="${product.detail}">
+                         data-status="${product.status}" 
+                         data-provider="${product.provider}" 
+                         data-nama="${product.nama}" 
+                         data-harga="${product.harga}"
+                         data-fee="${product.fee}" 
+                         data-detail="${product.detail}">
                     
                     <div class="card-content">
                         <div class="absolute top-0 left-0 ${statusColor} text-white font-bold px-3 py-1 rounded-br-lg text-sm z-10">${statusLabel}</div>
@@ -549,31 +666,16 @@
             
             /**
              * Fungsi utama untuk merender kartu dan paginasi
-             * (Tidak ada perubahan di fungsi ini)
              */
             function renderPage() {
-                const filteredCards = allProductData.filter(product => {
-                    let providerMatch = false;
-                    if (currentFilter === 'all') {
-                        providerMatch = true;
-                    } else if (currentFilter === 'xl') {
-                        providerMatch = (product.provider === 'xl' || product.provider === 'xa');
-                    } else if (currentFilter === 'axis') {
-                        providerMatch = (product.provider === 'axis' || product.provider === 'xa');
-                    }
-                    
-                    const searchTerm = currentSearchTerm.toLowerCase();
-                    const searchMatch = (
-                        product.nama.toLowerCase().includes(searchTerm) || 
-                        product.detail.toLowerCase().includes(searchTerm) ||
-                        product.provider.toLowerCase().includes(searchTerm)
-                    );
-
-                    return providerMatch && searchMatch;
-                });
-                
+                const filteredCards = getFilteredProducts();
                 const totalItems = filteredCards.length;
                 const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+                if (currentPage > totalPages && totalPages > 0) {
+                    currentPage = totalPages;
+                }
+
                 noResultsMessage.classList.toggle('hidden', totalItems > 0);
                 paginationControls.classList.toggle('hidden', totalPages <= 1);
 
@@ -595,7 +697,24 @@
                 nextButton.disabled = (currentPage === totalPages || totalPages === 0);
             }
 
-            // --- FUNGSI MODAL PRODUK (Lama) ---
+            // --- FUNGSI SIDEBAR ---
+            function openSidebar() {
+                sidebar.classList.remove('-translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                sidebarOverlay.classList.add('opacity-100');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('opacity-0');
+                setTimeout(() => {
+                    sidebarOverlay.classList.add('hidden');
+                    sidebarOverlay.classList.remove('opacity-0');
+                }, 300);
+            }
+            // ------------------------------------
+
+            // --- FUNGSI MODAL (Detail Beli) ---
             function showModal() {
                 modal.classList.remove('hidden');
                 setTimeout(() => {
@@ -611,27 +730,29 @@
                 }, 300);
             }
             // ------------------------------------
-
-            // --- FUNGSI MODAL AREA BARU ---
-            function showAreaModal() {
+            
+            // --- *** FUNGSI BARU: Modal Area *** ---
+            function openAreaModal() {
                 areaModal.classList.remove('hidden');
                 setTimeout(() => {
                     areaModal.classList.remove('opacity-0');
                     areaModalContentBox.classList.remove('opacity-0', 'scale-95');
                 }, 10);
             }
-            function hideAreaModal() {
+            function closeAreaModal() {
                 areaModal.classList.add('opacity-0');
                 areaModalContentBox.classList.add('opacity-0', 'scale-95');
                 setTimeout(() => {
                     areaModal.classList.add('hidden');
+                    // Reset modal saat ditutup
+                    areaSearchInput.value = '';
+                    areaResultsDisplay.innerHTML = defaultAreaMessage;
                 }, 300);
             }
             // ------------------------------------
 
 
             // --- FUNGSI UTAMA: Load Data ---
-            // (Tidak ada perubahan di fungsi ini)
             async function loadProducts() {
                 if (api_url === "PASTE_URL_ANDA_DI_SINI" || api_url === "") {
                     grid.innerHTML = `<p class="text-center text-red-600 font-bold col-span-full">Error: API URL belum diatur. Harap edit file index.html dan masukkan URL Google Apps Script Anda.</p>`;
@@ -653,7 +774,7 @@
                     if (data && !data.error) {
                         allProductData = data; 
                         currentPage = 1;
-                        renderPage(); 
+                        renderPage();
                     } else {
                         throw new Error(data.message || "Data tidak valid dari API.");
                     }
@@ -666,9 +787,14 @@
                 }
             }
             
-            // --- EVENT LISTENERS (Sebagian besar sama) ---
+            // --- EVENT LISTENERS ---
 
-            // 1. Listener untuk Search Bar Produk
+            // 0. Listener Sidebar
+            if (menuToggleBtn) menuToggleBtn.addEventListener('click', openSidebar);
+            if (sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeSidebar);
+            if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+            
+            // 1. Listener untuk Search Bar
             searchBar.addEventListener('input', () => { 
                 currentSearchTerm = searchBar.value; 
                 currentPage = 1; 
@@ -696,24 +822,7 @@
             });
 
             nextButton.addEventListener('click', () => {
-                // (Logika paginasi next, tidak berubah)
-                const totalFiltered = allProductData.filter(product => {
-                    let providerMatch = false;
-                    if (currentFilter === 'all') {
-                        providerMatch = true;
-                    } else if (currentFilter === 'xl') {
-                        providerMatch = (product.provider === 'xl' || product.provider === 'xa');
-                    } else if (currentFilter === 'axis') {
-                        providerMatch = (product.provider === 'axis' || product.provider === 'xa');
-                    }
-                    const searchTerm = currentSearchTerm.toLowerCase();
-                    const searchMatch = (
-                        product.nama.toLowerCase().includes(searchTerm) || 
-                        product.detail.toLowerCase().includes(searchTerm) ||
-                        product.provider.toLowerCase().includes(searchTerm)
-                    );
-                    return providerMatch && searchMatch;
-                }).length;
+                const totalFiltered = getFilteredProducts().length;
                 const totalPages = Math.ceil(totalFiltered / itemsPerPage);
                 
                 if (currentPage < totalPages) {
@@ -724,7 +833,6 @@
             });
 
             // 4. Listener untuk Tombol Beli (WA)
-            // (Tidak ada perubahan di listener ini)
             grid.addEventListener('click', function(e) {
                 const buyButton = e.target.closest('.btn-buy'); 
                 if (buyButton) {
@@ -735,7 +843,7 @@
 
                     const productName = card.getAttribute('data-nama');
                     const productPriceRaw = card.getAttribute('data-harga');
-                    const productFeeRaw = card.getAttribute('data-fee'); 
+                    const productFeeRaw = card.getAttribute('data-fee');
                     const productDetailsRaw = card.getAttribute('data-detail');
                     const productDetails = productDetailsRaw.split(','); 
 
@@ -757,7 +865,8 @@
 *Harga:* Rp ${formattedPrice}
 *Fee:* Rp ${formattedFee}
 *Total:* Rp ${formattedTotal}
-\n*Detail:* ${detailText}\n
+
+*Detail:* ${detailText}\n
 Mohon segera diproses ya. Terima kasih!`;
                     
                     const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
@@ -769,11 +878,11 @@ Mohon segera diproses ya. Terima kasih!`;
                     modalFee.textContent = `Rp ${formattedFee}`;
                     modalTotalPrice.textContent = `Rp ${formattedTotal}`;
 
-                    modalDetails.innerHTML = ''; 
+                    modalDetails.innerHTML = '';
                     productDetails.forEach(detail => {
                         const parts = detail.split(':');
                         const key = parts[0].trim();
-                        const value = parts[1].trim();
+                        const value = parts[1] ? parts[1].trim() : '';
                         const iconSvg = detailIcons[key] || detailIcons['default'];
                         
                         const detailElement = document.createElement('div');
@@ -789,7 +898,18 @@ Mohon segera diproses ya. Terima kasih!`;
                 }
             });
             
-            // 5. LISTENER MODAL PRODUK (Lama)
+            // 5. Listener untuk Tombol WA di Sidebar
+            if (waHeaderButton) {
+                waHeaderButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const message = "Halo KiosData, saya ingin bertanya tentang paket data yang tersedia.";
+                    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+                    window.open(waUrl, '_blank');
+                    closeSidebar(); 
+                });
+            }
+            
+            // 6. Listener Modal (Detail Beli)
             modalCloseButton.addEventListener('click', hideModal);
             modalCancelButton.addEventListener('click', hideModal);
             modal.addEventListener('click', (e) => {
@@ -805,47 +925,64 @@ Mohon segera diproses ya. Terima kasih!`;
                 hideModal(); 
             });
 
-            // --- ************************** ---
-            // --- EVENT LISTENER BARU        ---
-            // --- ************************** ---
+            // --- *** LISTENER BARU: Modal Area *** ---
+            
+            // 7. Buka Modal Area
+            if (cekAreaLink) {
+                cekAreaLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openAreaModal();
+                    closeSidebar(); // Langsung tutup sidebar
+                });
+            }
+            
+            // 8. Tutup Modal Area
+            if (areaModalCloseBtn) {
+                areaModalCloseBtn.addEventListener('click', closeAreaModal);
+            }
+            if (areaModal) {
+                areaModal.addEventListener('click', (e) => {
+                    if (e.target === areaModal) { // Klik di overlay
+                        closeAreaModal();
+                    }
+                });
+            }
 
-            // 6. LISTENER MODAL AREA BARU
-            cekAreaButton.addEventListener('click', showAreaModal);
-            areaModalCloseButton.addEventListener('click', hideAreaModal);
-            areaModal.addEventListener('click', (e) => {
-                if (e.target === areaModal) {
-                    hideAreaModal();
-                }
-            });
-
-            // 7. LISTENER SEARCH AREA BARU
-            areaSearchInput.addEventListener('input', () => {
-                const searchTerm = areaSearchInput.value.toLowerCase().trim();
-
-                // Hanya cari jika input lebih dari 2 karakter
-                if (searchTerm.length < 3) {
-                    areaResults.innerHTML = '<p class="text-slate-500 text-center p-4">Silakan mulai ketik untuk mencari...</p>';
-                    return;
-                }
-
-                // Filter data area berdasarkan searchTerm
-                const results = areaData.filter(item =>
-                    item.kota.toLowerCase().includes(searchTerm)
-                );
-
-                if (results.length > 0) {
-                    // Tampilkan hasil
-                    areaResults.innerHTML = results.map(item => `
-                        <div class="py-3 px-4 border-b border-slate-200 last:border-b-0">
-                            <strong class="text-slate-900">${item.kota}</strong>
-                            <span class="text-sky-600 font-semibold ml-2 float-right">${item.area}</span>
-                        </div>
-                    `).join('');
-                } else {
-                    // Tampilkan pesan tidak ditemukan
-                    areaResults.innerHTML = '<p class="text-slate-500 text-center p-4">Area tidak ditemukan. Coba kata kunci lain.</p>';
-                }
-            });
+            // 9. Live Search di Modal Area
+            if (areaSearchInput) {
+                areaSearchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.trim().toLowerCase();
+                    
+                    // 9a. Jika input kosong atau terlalu pendek
+                    if (searchTerm.length < 2) {
+                        areaResultsDisplay.innerHTML = defaultAreaMessage;
+                        return;
+                    }
+                    
+                    // 9b. Filter data
+                    const results = areaData.filter(item => 
+                        item.kota.toLowerCase().includes(searchTerm)
+                    );
+                    
+                    // 9c. Tampilkan hasil
+                    if (results.length === 0) {
+                        areaResultsDisplay.innerHTML = '<p class="text-slate-500">Area tidak ditemukan untuk <strong class="text-slate-700">' + searchTerm + '</strong>.</p>';
+                    } else {
+                        let html = '';
+                        results.forEach(item => {
+                            html += `
+                                <div class="p-3 border-b border-slate-200 last:border-b-0">
+                                    <strong class="text-slate-800">${item.kota}</strong>
+                                    <span class="ml-2 bg-sky-100 text-sky-800 font-bold py-0.5 px-2 rounded-full text-sm">${item.area}</span>
+                                </div>
+                            `;
+                        });
+                        areaResultsDisplay.innerHTML = html;
+                    }
+                });
+            }
+            
+            // ------------------------------------
 
             // --- INISIALISASI ---
             // Panggil fungsi loadProducts() untuk memulai semuanya
