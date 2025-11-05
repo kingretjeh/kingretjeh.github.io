@@ -23,7 +23,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Pricelist Paket Data Murah - KiosData">
     <meta name="twitter:description" content="Temukan paket data terbaik untuk kebutuhanmu. Cepat, murah, dan terpercaya.">
-    <meta name="twitter:image" content="https://placehold.co/1200x630/0ea5e9/ffffff?text=KiosData&font=inter">
+    <meta name="twitter:image" content="httpsS://placehold.co/1200x630/0ea5e9/ffffff?text=KiosData&font=inter">
     <!-- *** AKHIR PERUBAHAN *** -->
 
 
@@ -181,6 +181,15 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                 </svg>
                 <span>Cek Area Anda</span>
+            </a>
+            
+            <!-- *** ITEM BARU DITAMBAHKAN DI SINI *** -->
+            <a href="#" id="lainnya-link" class="flex items-center gap-3 py-2.5 px-3 rounded-lg text-slate-700 font-medium hover:bg-sky-50 hover:text-sky-600 transition-colors">
+                <!-- Ikon Grid (Lainnya) -->
+                <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25A2.25 2.25 0 018.25 10.5H6A2.25 2.25 0 013.75 8.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6A2.25 2.25 0 0115.75 3.75h2.25A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25A2.25 2.25 0 0113.5 8.25V6zM13.5 15.75A2.25 2.25 0 0115.75 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                </svg>
+                <span>Lainnya</span>
             </a>
             
             <!-- Grup 2: Bantuan -->
@@ -397,6 +406,31 @@
     <!-- *** AKHIR HTML BARU *** -->
 
 
+    <!-- *** HTML MODAL BARU DITAMBAHKAN DI SINI *** -->
+    <div id="lainnya-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden transition-opacity duration-300 ease-in-out opacity-0">
+        <!-- Konten box dibuat lebih lebar (max-w-5xl) untuk iframe -->
+        <div id="lainnya-modal-content-box" class="bg-white rounded-xl shadow-2xl max-w-5xl w-full transition-all duration-300 ease-in-out transform scale-95 opacity-0">
+            
+            <!-- Header Modal Lainnya -->
+            <div class="flex justify-between items-center p-5 border-b border-slate-200">
+                <h3 class="text-xl font-bold text-slate-900">Lainnya</h3>
+                <button id="lainnya-modal-close-button" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            
+            <!-- Konten Modal Lainnya (Iframe) -->
+            <div class="p-6">
+                <p class="text-sm text-slate-500 mb-4">Menampilkan konten dari sumber eksternal. Kecepatan muat tergantung koneksi Anda.</p>
+                <!-- Iframe disetel ke 70vh (70% tinggi layar) -->
+                <iframe src="https://juraganxl.my.id/" class="w-full h-[70vh] rounded-lg border border-slate-200" title="Konten Eksternal Lainnya"></iframe>
+            </div>
+
+        </div>
+    </div>
+    <!-- *** AKHIR HTML MODAL BARU *** -->
+
+
     <!-- Footer -->
     <footer class="bg-slate-900 text-gray-400 mt-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center">
@@ -601,6 +635,12 @@
             const areaSearchInput = document.getElementById('area-search-input');
             const areaResultsDisplay = document.getElementById('area-results-display');
             const defaultAreaMessage = '<p class="text-slate-500">Silakan ketik nama kota atau kabupaten Anda di atas.</p>';
+            
+            // --- *** ELEMEN DOM BARU: Modal Lainnya *** ---
+            const lainnyaLink = document.getElementById('lainnya-link');
+            const lainnyaModal = document.getElementById('lainnya-modal');
+            const lainnyaModalContentBox = document.getElementById('lainnya-modal-content-box');
+            const lainnyaModalCloseBtn = document.getElementById('lainnya-modal-close-button');
             // --------------------
 
             
@@ -759,6 +799,10 @@
             }
             // ------------------------------------
             
+            <!-- *** PERBAIKAN DIMULAI DI SINI *** -->
+            
+            <!-- Mengembalikan fungsi-fungsi yang hilang/rusak untuk Modal Area -->
+            
             // --- *** FUNGSI BARU: Modal Area *** ---
             function openAreaModal() {
                 areaModal.classList.remove('hidden');
@@ -778,6 +822,25 @@
                 }, 300);
             }
             // ------------------------------------
+
+            // --- *** FUNGSI BARU: Modal Lainnya *** ---
+            function openLainnyaModal() {
+                lainnyaModal.classList.remove('hidden');
+                setTimeout(() => {
+                    lainnyaModal.classList.remove('opacity-0');
+                    lainnyaModalContentBox.classList.remove('opacity-0', 'scale-95');
+                }, 10);
+            }
+            function closeLainnyaModal() {
+                lainnyaModal.classList.add('opacity-0');
+                lainnyaModalContentBox.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    lainnyaModal.classList.add('hidden');
+                }, 300);
+            }
+            // ------------------------------------
+            
+            <!-- *** PERBAIKAN SELESAI *** -->
 
 
             // --- FUNGSI UTAMA: Load Data ---
@@ -897,7 +960,8 @@
 *Detail:* ${detailText}\n
 Mohon segera diproses ya. Terima kasih!`;
                     
-                    const waUrl = `https_wa_me_${waNumber}?text=${encodeURIComponent(message)}`;
+                    // --- *** PERBAIKAN URL WA *** ---
+                    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
                     
                     modalTitle.textContent = productName;
                     modalConfirmButton.dataset.waUrl = waUrl; 
@@ -931,7 +995,8 @@ Mohon segera diproses ya. Terima kasih!`;
                 waHeaderButton.addEventListener('click', function(e) {
                     e.preventDefault();
                     const message = "Halo KiosData, saya ingin bertanya tentang paket data yang tersedia.";
-                    const waUrl = `https_wa_me_${waNumber}?text=${encodeURIComponent(message)}`;
+                    // --- *** PERBAIKAN URL WA *** ---
+                    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
                     window.open(waUrl, '_blank');
                     closeSidebar(); 
                 });
@@ -1010,6 +1075,28 @@ Mohon segera diproses ya. Terima kasih!`;
                 });
             }
             
+            // --- *** LISTENER BARU: Modal Lainnya *** ---
+            
+            // 10. Buka Modal Lainnya
+            if (lainnyaLink) {
+                lainnyaLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openLainnyaModal();
+                    closeSidebar(); // Langsung tutup sidebar
+                });
+            }
+            
+            // 11. Tutup Modal Lainnya
+            if (lainnyaModalCloseBtn) {
+                lainnyaModalCloseBtn.addEventListener('click', closeLainnyaModal);
+            }
+            if (lainnyaModal) {
+                lainnyaModal.addEventListener('click', (e) => {
+                    if (e.target === lainnyaModal) { // Klik di overlay
+                        closeLainnyaModal();
+                    }
+                });
+            }
             // ------------------------------------
 
             // --- INISIALISASI ---
