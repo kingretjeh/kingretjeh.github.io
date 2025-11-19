@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Kasir Konter Pulsa & Data</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- html2canvas for Screenshot -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#0ea5e9', 
+                        secondary: '#64748b',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        /* Print Styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #receipt-area, #receipt-area * {
+                visibility: visible;
+            }
+            #receipt-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%; 
+                margin: 0;
+                padding: 0;
+                background: white;
+                color: black;
+            }
+            .shadow-md, .bg-slate-50, .shadow-lg {
+                box-shadow: none !important;
+                background-color: white !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+        
+        /* Dropdown Animation */
+        .dropdown-enter {
+            opacity: 0;
+            transform: scale(0.95) translateY(-10px);
+        }
+        .dropdown-enter-active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            transition: opacity 200ms, transform 200ms;
+        }
+        .dropdown-exit {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        .dropdown-exit-active {
+            opacity: 0;
+            transform: scale(0.95) translateY(-10px);
+            transition: opacity 200ms, transform 200ms;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col font-sans text-gray-800">
+
+    <!-- Top Navigation -->
+    <nav class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 shrink-0 sticky top-0 z-50 shadow-sm no-print">
+        <div class="flex items-center gap-3">
+            <div class="bg-sky-500 text-white p-2 rounded-lg shadow-lg shadow-sky-200">
+                <i class="fas fa-mobile-alt text-xl w-6 text-center"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg text-gray-800 leading-tight tracking-tight">KONTER CELL</h1>
+                <p class="text-xs text-gray-500" id="connection-status">Menghubungkan Database...</p>
+            </div>
+        </div>
+        
+        <!-- Info Area (Desktop) -->
+        <div class="hidden md:flex items-center text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded-full border border-gray-200">
+            <i class="fas fa-info-circle mr-2 text-sky-500"></i>
+            Klik produk untuk langsung menambahkan
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button onclick="location.reload()" class="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors" title="Refresh Data">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <div class="h-8 w-8 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center font-bold text-sm border border-sky-200">
+                OP
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 w-full max-w-3xl mx-auto p-4 pb-20">
+        
+        <!-- SECTION 1: Product Selection -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6 relative z-40">
+            <!-- Header -->
+            <div class="mb-4">
+                <h2 class="text-lg font-bold text-gray-800 mb-1 flex items-center gap-2">
+                    <i class="fas fa-box-open text-sky-500"></i> Pilih Produk
+                </h2>
+                <p class="text-xs text-gray-500">Cari dan pilih paket data atau pulsa.</p>
+            </div>
+
+            <!-- Filter Categories -->
+            <div class="flex gap-2 overflow-x-auto no-scrollbar pb-4 mb-2 border-b border-gray-50" id="category-filters">
+                <button class="px-4 py-1.5 bg-sky-600 text-white rounded-full text-xs font-semibold whitespace-nowrap active-category shadow-md" data-cat="all">Semua</button>
+                <!-- Categories injected here -->
+            </div>
+            
+            <!-- MODERN DROPDOWN CONTAINER -->
+            <div id="products-container" class="mt-4 relative">
+                <div class="flex flex-col items-center justify-center h-16 text-gray-400 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                    <i class="fas fa-circle-notch fa-spin text-xl mb-2 text-sky-500"></i>
+                    <p class="text-xs">Memuat data paket...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: Cart & Checkout -->
+        <div class="bg-white rounded-xl shadow-lg border border-sky-100 overflow-hidden relative z-0">
+            <div class="p-4 bg-slate-50 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-shopping-basket text-sky-600"></i> Detail Transaksi
+                    <span class="bg-sky-100 text-sky-800 text-xs font-medium px-2.5 py-0.5 rounded-full" id="cart-count-badge">0</span>
+                </h2>
+                <button onclick="clearCart()" class="text-xs text-red-500 hover:text-red-700 font-medium hover:underline flex items-center gap-1">
+                    <i class="fas fa-trash-alt"></i> Reset Form
+                </button>
+            </div>
+
+            <div class="p-0 md:p-6">
+                <div class="flex flex-col-reverse md:flex-row md:gap-8">
+                    
+                    <!-- Left Column: Item List -->
+                    <div class="flex-1 p-4 md:p-0 border-t md:border-t-0 border-gray-100 mt-4 md:mt-0">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Item Dipilih</h3>
+                        <div id="cart-items" class="space-y-3 min-h-[100px]">
+                             <div class="flex flex-col items-center justify-center h-full text-gray-400 text-center py-8 opacity-60 bg-gray-50 rounded-lg border border-dashed">
+                                <i class="fas fa-mouse-pointer text-2xl mb-2"></i>
+                                <p class="text-sm">Silakan pilih produk diatas.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Form & Payment -->
+                    <div class="flex-1 p-4 md:p-0 bg-sky-50/30 md:bg-transparent rounded-lg">
+                        <!-- Input No HP -->
+                        <div class="mb-5">
+                            <label class="text-xs font-bold text-sky-700 block mb-1.5 uppercase tracking-wider">
+                                <i class="fas fa-phone-alt mr-1"></i> No. HP Pelanggan
+                            </label>
+                            <input type="tel" id="customer-phone" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-base outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 font-mono tracking-wide shadow-sm transition-all placeholder:text-gray-300" placeholder="08xxxxxxxxxx">
+                        </div>
+
+                        <div class="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                            <div class="flex justify-between items-center text-gray-600">
+                                <span class="text-sm font-medium">Total Tagihan</span>
+                                <span class="font-bold text-gray-800 text-lg" id="cart-total">Rp 0</span>
+                            </div>
+                            
+                            <div class="pt-3 border-t border-gray-200">
+                                <label class="text-xs text-gray-500 block mb-1.5">Uang Diterima (Rp)</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-bold">Rp</span>
+                                    <input type="number" id="cash-input" class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm outline-none focus:border-sky-500 font-mono shadow-sm" placeholder="0">
+                                </div>
+                                <div class="flex justify-between mt-2 text-xs items-center bg-white p-2 rounded border border-gray-100">
+                                    <span class="text-gray-500">Kembalian:</span>
+                                    <span class="font-bold text-gray-400 text-sm" id="change-display">Rp 0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Action Button -->
+                <div class="mt-6 px-4 md:px-0 pb-4 md:pb-0">
+                    <button onclick="processCheckout()" id="btn-checkout" disabled class="w-full bg-sky-600 hover:bg-sky-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-4 rounded-xl font-bold shadow-lg shadow-sky-200 transition-all flex justify-center items-center gap-2 text-base transform active:scale-[0.99]">
+                        <i class="fas fa-print text-lg"></i> Cetak Struk
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Receipt Modal -->
+    <div id="receipt-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 no-print backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-[380px] overflow-hidden flex flex-col max-h-[95vh] relative">
+            
+            <!-- Header Modal -->
+            <div class="p-4 border-b flex justify-between items-center bg-gray-50 z-10">
+                <h3 class="font-bold text-gray-700 flex items-center gap-2">
+                    <i class="fas fa-receipt text-sky-500"></i> Preview
+                </h3>
+                <button onclick="closeReceiptModal()" class="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Scrollable Area -->
+            <div class="overflow-y-auto p-6 bg-gray-100 flex justify-center items-start h-full">
+                
+                <!-- MODERN RECEIPT LAYOUT -->
+                <div id="receipt-area" class="bg-white p-6 shadow-lg w-[80mm] text-xs leading-relaxed font-sans text-gray-800 relative rounded-sm">
+                    
+                    <!-- Store Header -->
+                    <div class="flex flex-col items-center justify-center mb-4">
+                        <div class="w-10 h-10 bg-sky-600 text-white rounded-lg flex items-center justify-center text-xl mb-2">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h2 class="text-sm font-bold uppercase tracking-wide text-gray-900">KONTER CELL</h2>
+                        <p class="text-[10px] text-gray-500 mt-0.5">Jl. Mawar No. 12, Jakarta</p>
+                        <p class="text-[10px] text-gray-500">WA: 0812-3456-7890</p>
+                    </div>
+                    
+                    <!-- Divider -->
+                    <div class="h-px bg-gray-200 w-full my-3"></div>
+                    
+                    <!-- Transaction Info -->
+                    <div class="flex justify-between text-[10px] text-gray-500 mb-3">
+                        <div class="flex flex-col">
+                            <span id="receipt-date">01/01/24</span>
+                            <span id="receipt-time">12:00</span>
+                        </div>
+                        <div class="flex flex-col text-right">
+                            <span>ID: <span id="receipt-no" class="font-mono text-gray-700">#0001</span></span>
+                            <span>Kasir: Admin</span>
+                        </div>
+                    </div>
+
+                    <!-- Customer Box -->
+                    <div class="bg-sky-50 rounded p-2 mb-4 border border-sky-100 text-center">
+                        <span class="text-[10px] text-sky-600 font-semibold block uppercase tracking-wider">Nomor Tujuan</span>
+                        <span class="text-sm font-bold text-gray-800 tracking-widest font-mono" id="receipt-customer-phone">-</span>
+                    </div>
+
+                    <!-- Items Header -->
+                    <div class="grid grid-cols-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+                        <div class="col-span-3">Produk</div>
+                        <div class="text-right">Harga</div>
+                    </div>
+
+                    <!-- Receipt Items List -->
+                    <div id="receipt-items-list" class="space-y-2 mb-4">
+                        <!-- Items injected via JS -->
+                    </div>
+
+                    <!-- Totals -->
+                    <div class="border-t border-dashed border-gray-300 pt-3 space-y-1">
+                        <div class="flex justify-between text-[10px] text-gray-600">
+                            <span>Subtotal</span>
+                            <span id="receipt-subtotal" class="font-medium">Rp 0</span>
+                        </div>
+                         <div class="flex justify-between text-[10px] text-gray-600">
+                            <span>Biaya Admin</span>
+                            <span class="font-medium">Rp 0</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center pt-2 mt-2 border-t border-gray-200">
+                            <span class="font-bold text-sm text-gray-800">TOTAL</span>
+                            <span id="receipt-total" class="font-bold text-base text-sky-600">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <!-- Payment Info -->
+                    <div class="mt-3 bg-gray-50 p-2 rounded text-[10px] text-gray-600">
+                        <div class="flex justify-between mb-1">
+                            <span>Tunai</span>
+                            <span id="receipt-cash" class="font-medium">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-green-600 font-bold">
+                            <span>Kembali</span>
+                            <span id="receipt-change">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="text-center mt-6">
+                        <p class="text-[10px] text-gray-500 font-medium">Terima kasih atas kunjungan Anda!</p>
+                        <p class="text-[9px] text-gray-400 mt-1">Simpan struk ini sebagai bukti pembayaran.</p>
+                        
+                        <!-- Fake QR Code Style -->
+                        <div class="mt-3 flex justify-center opacity-50">
+                            <div class="flex gap-0.5">
+                                <div class="w-1 h-6 bg-black"></div>
+                                <div class="w-2 h-6 bg-black"></div>
+                                <div class="w-1 h-6 bg-black"></div>
+                                <div class="w-3 h-6 bg-black"></div>
+                                <div class="w-1 h-6 bg-black"></div>
+                                <div class="w-2 h-6 bg-black"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Receipt -->
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="p-4 border-t bg-white flex gap-2 z-10">
+                 <button onclick="downloadReceipt()" class="flex-1 py-3 px-4 bg-white border border-green-600 text-green-600 rounded-xl hover:bg-green-50 font-bold shadow-sm flex justify-center items-center gap-2 transition-transform active:scale-95">
+                    <i class="fas fa-download"></i> Download JPG
+                </button>
+                <button onclick="window.print()" class="flex-1 py-3 px-4 bg-sky-600 text-white rounded-xl hover:bg-sky-700 font-bold shadow-lg shadow-sky-200 flex justify-center items-center gap-2 transition-transform active:scale-95">
+                    <i class="fas fa-print"></i> Cetak
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Javascript Logic -->
+    <script>
+        // --- State Management ---
+        const STATE = {
+            products: [],
+            cart: [],
+            filteredProducts: [],
+            categories: new Set(),
+            currentCategory: 'all',
+            csvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTxOO2lwk4qENZ8dFO_3Stl0gmDqnAYHfE2g0dE-LKEJqTtiWT3J5IS4fWVZAWzVlHE8yNXUAFJbgD0/pub?gid=0&single=true&output=csv'
+        };
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData();
+            setupEventListeners();
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                const dropdown = document.getElementById('dropdown-menu');
+                const trigger = document.getElementById('dropdown-trigger');
+                if (dropdown && !dropdown.classList.contains('hidden') && 
+                    !trigger.contains(e.target) && !dropdown.contains(e.target)) {
+                    closeDropdown();
+                }
+            });
+        });
+
+        // --- Data Fetching & Parsing ---
+        async function fetchData() {
+            const statusEl = document.getElementById('connection-status');
+            try {
+                const response = await fetch(STATE.csvUrl);
+                if (!response.ok) throw new Error("Gagal mengambil data");
+                const csvText = await response.text();
+                
+                const parsedData = parseCSV(csvText);
+                STATE.products = parsedData;
+                STATE.filteredProducts = parsedData;
+                
+                STATE.products.forEach(p => {
+                    if(p.category) STATE.categories.add(p.category);
+                });
+
+                renderCategories();
+                renderProducts();
+                statusEl.innerText = `Data Siap. ${STATE.products.length} item dimuat.`;
+                statusEl.classList.add('text-green-600');
+            } catch (error) {
+                console.error(error);
+                statusEl.innerText = "Gagal memuat database.";
+                statusEl.classList.add('text-red-500');
+            }
+        }
+
+        function parseCSV(text) {
+            const rows = text.trim().split('\n').map(row => {
+                const regex = /(?:^|,)(\"(?:[^\"]+|\"\")*\"|[^,]*)/g;
+                let matches = [];
+                let match;
+                while (match = regex.exec(row)){
+                    let val = match[1];
+                    if (val.length && val.charAt(0) === '"') val = val.slice(1, -1).replace(/""/g, '"');
+                    matches.push(val.trim());
+                }
+                return matches;
+            });
+
+            const headers = rows[0].map(h => h.toLowerCase()); 
+            const data = [];
+
+            const keyMap = {
+                name: headers.findIndex(h => h.includes('nama') || h.includes('name') || h.includes('produk') || h.includes('barang')),
+                price: headers.findIndex(h => h.includes('harga') || h.includes('price') || h.includes('jual')),
+                category: headers.findIndex(h => h.includes('kategori') || h.includes('cat') || h.includes('provider') || h.includes('op')),
+            };
+
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                if (row.length < 2) continue; 
+
+                const rawPrice = row[keyMap.price] || "0";
+                const priceClean = parseInt(rawPrice.replace(/[^0-9]/g, '')) || 0;
+                
+                const cat = keyMap.category > -1 ? row[keyMap.category] : 'Umum';
+
+                data.push({
+                    id: i,
+                    name: row[keyMap.name] || `Item #${i}`,
+                    price: priceClean,
+                    category: cat,
+                });
+            }
+            return data;
+        }
+
+        // --- Rendering ---
+        function renderCategories() {
+            const container = document.getElementById('category-filters');
+            container.innerHTML = `<button onclick="filterCategory('all')" class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cat-btn ring-2 ring-transparent ring-offset-1" data-cat="all">Semua</button>`;
+            
+            STATE.categories.forEach(cat => {
+                if(!cat) return;
+                const btn = document.createElement('button');
+                btn.className = "px-4 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cat-btn ring-2 ring-transparent ring-offset-1";
+                btn.textContent = cat;
+                btn.onclick = () => filterCategory(cat);
+                btn.dataset.cat = cat;
+                container.appendChild(btn);
+            });
+            updateCategoryActiveState();
+        }
+
+        function renderProducts() {
+            const container = document.getElementById('products-container');
+            container.innerHTML = '';
+
+            if (STATE.filteredProducts.length === 0) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-16 text-gray-400 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                        <i class="fas fa-search text-xl mb-1"></i>
+                        <p class="text-xs">Paket tidak ditemukan.</p>
+                    </div>`;
+                return;
+            }
+
+            // --- MODERN DROPDOWN CONSTRUCTION ---
+            
+            const dropdownWrapper = document.createElement('div');
+            dropdownWrapper.className = "relative w-full";
+            dropdownWrapper.id = "custom-dropdown";
+
+            // 1. Trigger Button
+            const trigger = document.createElement('button');
+            trigger.id = "dropdown-trigger";
+            trigger.className = "w-full bg-white border border-gray-300 rounded-xl px-4 py-3.5 text-left flex justify-between items-center shadow-sm hover:border-sky-400 focus:outline-none focus:ring-4 focus:ring-sky-100 transition-all group";
+            trigger.onclick = toggleDropdown;
+            trigger.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-sky-50 text-sky-600 flex items-center justify-center group-hover:bg-sky-600 group-hover:text-white transition-colors">
+                        <i class="fas fa-sim-card"></i>
+                    </div>
+                    <div>
+                        <span class="block text-sm font-bold text-gray-700" id="dropdown-label">-- Pilih Paket --</span>
+                        <span class="block text-[10px] text-gray-400" id="dropdown-sublabel">Klik untuk mencari produk</span>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-down text-gray-400 group-hover:text-sky-500 transition-colors" id="dropdown-arrow"></i>
+            `;
+
+            // 2. Dropdown Menu (Hidden by default)
+            const menu = document.createElement('div');
+            menu.id = "dropdown-menu";
+            menu.className = "hidden absolute z-50 w-full mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col max-h-[400px] transform origin-top transition-all duration-200";
+            
+            // Search Input inside Dropdown
+            const searchContainer = document.createElement('div');
+            searchContainer.className = "p-3 border-b border-gray-100 bg-gray-50 sticky top-0 z-10";
+            searchContainer.innerHTML = `
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="dropdown-search-input" class="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm outline-none focus:border-sky-500 shadow-sm" placeholder="Ketik untuk memfilter..." autocomplete="off">
+                </div>
+            `;
+
+            // List Container
+            const list = document.createElement('div');
+            list.id = "dropdown-list";
+            list.className = "overflow-y-auto flex-1 p-2 space-y-1 scroll-smooth";
+
+            // Group and Populate List
+            const categories = {};
+            STATE.filteredProducts.forEach(p => {
+                if(!categories[p.category]) categories[p.category] = [];
+                categories[p.category].push(p);
+            });
+
+            // Sort categories and items
+            const sortedCats = Object.keys(categories).sort();
+            
+            if(sortedCats.length === 0) {
+                list.innerHTML = `<div class="p-4 text-center text-gray-400 text-sm">Tidak ada data.</div>`;
+            } else {
+                sortedCats.forEach(cat => {
+                    // Category Header
+                    const catHeader = document.createElement('div');
+                    catHeader.className = "px-3 py-2 text-xs font-bold text-gray-400 uppercase tracking-wider bg-white sticky top-0";
+                    catHeader.innerText = cat;
+                    list.appendChild(catHeader);
+
+                    // Items
+                    categories[cat].forEach(p => {
+                        const item = document.createElement('button');
+                        item.className = "w-full text-left px-3 py-2.5 hover:bg-sky-50 rounded-lg flex justify-between items-center group transition-colors dropdown-item";
+                        item.dataset.search = `${p.name.toLowerCase()} ${p.category.toLowerCase()} ${p.price}`;
+                        item.onclick = () => selectProduct(p);
+                        item.innerHTML = `
+                            <div>
+                                <div class="font-medium text-sm text-gray-700 group-hover:text-sky-700">${p.name}</div>
+                                <div class="text-[10px] text-gray-400 group-hover:text-sky-500">${p.category}</div>
+                            </div>
+                            <div class="font-bold text-sm text-sky-600 bg-sky-50 px-2 py-1 rounded group-hover:bg-white group-hover:shadow-sm border border-transparent group-hover:border-sky-100">
+                                ${formatRupiah(p.price)}
+                            </div>
+                        `;
+                        list.appendChild(item);
+                    });
+                });
+            }
+
+            menu.appendChild(searchContainer);
+            menu.appendChild(list);
+            dropdownWrapper.appendChild(trigger);
+            dropdownWrapper.appendChild(menu);
+            container.appendChild(dropdownWrapper);
+
+            // Attach internal search event
+            setTimeout(() => {
+                const input = document.getElementById('dropdown-search-input');
+                if(input) {
+                    input.addEventListener('input', (e) => filterDropdownItems(e.target.value));
+                    // Prevent closing when clicking input
+                    input.addEventListener('click', (e) => e.stopPropagation());
+                }
+            }, 0);
+        }
+
+        // --- Dropdown Logic ---
+        function toggleDropdown(e) {
+            if(e) e.stopPropagation();
+            const menu = document.getElementById('dropdown-menu');
+            const input = document.getElementById('dropdown-search-input');
+            const arrow = document.getElementById('dropdown-arrow');
+            
+            if (menu.classList.contains('hidden')) {
+                // Open
+                menu.classList.remove('hidden');
+                menu.classList.add('dropdown-enter-active');
+                arrow.classList.add('rotate-180');
+                setTimeout(() => {
+                    if(input) input.focus();
+                }, 100);
+            } else {
+                closeDropdown();
+            }
+        }
+
+        function closeDropdown() {
+            const menu = document.getElementById('dropdown-menu');
+            const arrow = document.getElementById('dropdown-arrow');
+            if (menu && !menu.classList.contains('hidden')) {
+                menu.classList.add('hidden');
+                menu.classList.remove('dropdown-enter-active');
+                if(arrow) arrow.classList.remove('rotate-180');
+            }
+        }
+
+        function filterDropdownItems(query) {
+            const q = query.toLowerCase();
+            const items = document.querySelectorAll('.dropdown-item');
+            items.forEach(item => {
+                const text = item.dataset.search;
+                if(text.includes(q)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function selectProduct(product) {
+            addToCart(product.id);
+            closeDropdown();
+            
+            // Update Label for feedback
+            document.getElementById('dropdown-label').innerText = product.name;
+            document.getElementById('dropdown-sublabel').innerText = `Terpilih: ${formatRupiah(product.price)}`;
+            
+            // Reset label after a delay to encourage new selection
+            setTimeout(() => {
+                 document.getElementById('dropdown-label').innerText = "-- Pilih Paket --";
+                 document.getElementById('dropdown-sublabel').innerText = "Klik untuk mencari produk";
+            }, 2000);
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-items');
+            container.innerHTML = '';
+
+            if (STATE.cart.length === 0) {
+                container.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full text-gray-400 text-center py-8 opacity-60 bg-gray-50 rounded-lg border border-dashed">
+                    <i class="fas fa-mouse-pointer text-2xl mb-2"></i>
+                    <p class="text-sm">Silakan pilih produk diatas.</p>
+                </div>`;
+                updateTotals();
+                return;
+            }
+
+            STATE.cart.forEach(item => {
+                const el = document.createElement('div');
+                el.className = "flex justify-between items-center bg-sky-50 p-3 rounded-lg border border-sky-200 shadow-sm relative group animate-[fadeIn_0.3s_ease-out]";
+                el.innerHTML = `
+                    <div class="flex-1 pr-2">
+                        <h4 class="text-sm font-bold text-gray-800 leading-tight">${item.name}</h4>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span class="text-[10px] text-gray-500 bg-white px-1.5 py-0.5 rounded border">${item.category}</span>
+                            <span class="text-xs font-bold text-sky-600">${formatRupiah(item.price)}</span>
+                        </div>
+                    </div>
+                    <button onclick="removeFromCart(${item.id})" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-white rounded-full transition-all">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                `;
+                container.appendChild(el);
+            });
+            updateTotals();
+        }
+
+        // --- Logic ---
+        function filterCategory(cat) {
+            STATE.currentCategory = cat;
+            filterProducts();
+            updateCategoryActiveState();
+        }
+
+        function updateCategoryActiveState() {
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if(btn.dataset.cat === STATE.currentCategory) {
+                    btn.className = "px-4 py-1.5 bg-sky-600 text-white rounded-full text-xs font-semibold whitespace-nowrap transition-colors cat-btn shadow-md";
+                } else {
+                    btn.className = "px-4 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cat-btn ring-2 ring-transparent ring-offset-1";
+                }
+            });
+        }
+
+        function searchProducts(query) {
+            // This filters the main list (re-renders the dropdown content)
+            filterProducts(query);
+        }
+
+        function filterProducts(query = '') {
+            let filtered = STATE.products;
+
+            if (STATE.currentCategory !== 'all') {
+                filtered = filtered.filter(p => p.category === STATE.currentCategory);
+            }
+
+            // NOTE: Top search bar filters the dataset used by the dropdown
+            const q = query.toLowerCase(); 
+            if (q) {
+                filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+            }
+
+            STATE.filteredProducts = filtered;
+            renderProducts();
+        }
+
+        function addToCart(id) {
+            const product = STATE.products.find(p => p.id === id);
+            const existing = STATE.cart.find(c => c.id === id);
+            
+            if(!existing) {
+                STATE.cart.push({ ...product, qty: 1 });
+            } else {
+                alert('Item ini sudah dipilih.');
+            }
+            renderCart();
+        }
+
+        function removeFromCart(id) {
+            STATE.cart = STATE.cart.filter(c => c.id !== id);
+            renderCart();
+        }
+
+        function clearCart() {
+            if(STATE.cart.length === 0 && !document.getElementById('customer-phone').value) return;
+            
+            if(confirm('Reset transaksi?')) {
+                STATE.cart = [];
+                document.getElementById('customer-phone').value = '';
+                document.getElementById('cash-input').value = '';
+                renderCart();
+            }
+        }
+
+        function updateTotals() {
+            const total = STATE.cart.reduce((sum, item) => sum + item.price, 0); 
+            const count = STATE.cart.length;
+
+            document.getElementById('cart-total').innerText = formatRupiah(total);
+            document.getElementById('cart-count-badge').innerText = count;
+
+            calculateChange();
+
+            const btn = document.getElementById('btn-checkout');
+            if (total > 0) {
+                btn.disabled = false;
+                btn.classList.remove('bg-gray-300', 'cursor-not-allowed');
+                btn.classList.add('bg-sky-600', 'hover:bg-sky-700');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('bg-gray-300', 'cursor-not-allowed');
+                btn.classList.remove('bg-sky-600', 'hover:bg-sky-700');
+            }
+        }
+
+        function calculateChange() {
+            const total = STATE.cart.reduce((sum, item) => sum + item.price, 0);
+            const cash = parseInt(document.getElementById('cash-input').value) || 0;
+            const change = cash - total;
+            
+            const changeEl = document.getElementById('change-display');
+            if(change >= 0) {
+                changeEl.innerText = formatRupiah(change);
+                changeEl.classList.remove('text-red-500');
+                changeEl.classList.add('text-green-600', 'text-lg');
+            } else {
+                changeEl.innerText = "-" + formatRupiah(Math.abs(change));
+                changeEl.classList.add('text-red-500');
+                changeEl.classList.remove('text-green-600', 'text-lg');
+            }
+        }
+
+        function formatRupiah(num) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
+        }
+
+        function setupEventListeners() {
+            // Desktop & Mobile top search (filters the list logic)
+            // Dropdown internal search is handled in renderProducts
+            document.getElementById('cash-input').addEventListener('input', calculateChange);
+        }
+
+        // --- Receipt Logic ---
+        function processCheckout() {
+            const total = STATE.cart.reduce((sum, item) => sum + item.price, 0);
+            const cash = parseInt(document.getElementById('cash-input').value) || 0;
+            const phone = document.getElementById('customer-phone').value;
+
+            if(!phone) {
+                alert('Harap isi Nomor HP Pelanggan terlebih dahulu!');
+                document.getElementById('customer-phone').focus();
+                return;
+            }
+
+            if (cash < total) {
+                alert('Uang pembayaran kurang!');
+                document.getElementById('cash-input').focus();
+                return;
+            }
+
+            // Populate Receipt
+            const now = new Date();
+            document.getElementById('receipt-date').innerText = now.toLocaleDateString('id-ID');
+            document.getElementById('receipt-time').innerText = now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('receipt-no').innerText = `#${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+            document.getElementById('receipt-customer-phone').innerText = phone;
+            
+            const listContainer = document.getElementById('receipt-items-list');
+            listContainer.innerHTML = '';
+            
+            STATE.cart.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'grid grid-cols-4 text-[10px] text-gray-800 leading-tight items-start';
+                row.innerHTML = `
+                    <div class="col-span-3 font-medium pr-1">${item.name}</div>
+                    <div class="text-right font-semibold">${item.price.toLocaleString('id-ID')}</div>
+                `;
+                listContainer.appendChild(row);
+            });
+
+            document.getElementById('receipt-subtotal').innerText = formatRupiah(total);
+            document.getElementById('receipt-total').innerText = formatRupiah(total);
+            document.getElementById('receipt-cash').innerText = formatRupiah(cash);
+            document.getElementById('receipt-change').innerText = formatRupiah(cash - total);
+
+            document.getElementById('receipt-modal').classList.remove('hidden');
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receipt-modal').classList.add('hidden');
+             if(confirm("Transaksi selesai. Reset form?")) {
+                 STATE.cart = [];
+                 document.getElementById('cash-input').value = '';
+                 document.getElementById('customer-phone').value = '';
+                 renderCart();
+                 // Reset dropdown label
+                 document.getElementById('dropdown-label').innerText = "-- Pilih Paket --";
+                 document.getElementById('dropdown-sublabel').innerText = "Klik untuk mencari produk";
+             }
+        }
+
+        function downloadReceipt() {
+            const element = document.getElementById('receipt-area');
+            const receiptNo = document.getElementById('receipt-no').innerText.replace('#', '');
+            
+            // Use html2canvas to capture the receipt area
+            html2canvas(element, {
+                scale: 2, // Higher quality
+                backgroundColor: '#ffffff', // Ensure white background
+                useCORS: true // Allow loading external images if any
+            }).then(canvas => {
+                // Convert to data URL
+                const image = canvas.toDataURL("image/jpeg", 0.9);
+                
+                // Create temporary link to trigger download
+                const link = document.createElement('a');
+                link.href = image;
+                link.download = `Struk-Konter-${receiptNo}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }).catch(err => {
+                console.error("Gagal membuat gambar struk:", err);
+                alert("Maaf, gagal mendownload struk. Silakan coba lagi.");
+            });
+        }
+    </script>
+</body>
+</html>
