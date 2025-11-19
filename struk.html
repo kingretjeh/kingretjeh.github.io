@@ -107,7 +107,7 @@
                 <i class="fas fa-mobile-alt text-xl w-6 text-center"></i>
             </div>
             <div>
-                <h1 class="font-bold text-lg text-gray-800 leading-tight tracking-tight">KUOTA MURAH</h1>
+                <h1 class="font-bold text-lg text-gray-800 leading-tight tracking-tight" id="nav-store-name">KONTER CELL</h1>
                 <p class="text-xs text-gray-500" id="connection-status">Menghubungkan Database...</p>
             </div>
         </div>
@@ -119,6 +119,11 @@
         </div>
 
         <div class="flex items-center gap-3">
+            <!-- Settings Button -->
+            <button onclick="openSettings()" class="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors" title="Pengaturan Toko">
+                <i class="fas fa-cog"></i>
+            </button>
+            
             <button onclick="location.reload()" class="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors" title="Refresh Data">
                 <i class="fas fa-sync-alt"></i>
             </button>
@@ -234,6 +239,56 @@
 
     </main>
 
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 no-print backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden max-h-[90vh] flex flex-col">
+            <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                <h3 class="font-bold text-gray-700"><i class="fas fa-cog mr-1"></i> Pengaturan Toko</h3>
+                <button onclick="closeSettings()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-4 overflow-y-auto">
+                <!-- QUICK SELECT BUTTONS -->
+                <div class="bg-sky-50 p-3 rounded-lg border border-sky-100">
+                    <label class="block text-xs font-bold text-sky-700 mb-2 uppercase tracking-wide">Pilih Profil Cepat</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="applyPreset(1)" class="px-3 py-2 bg-white border border-sky-200 rounded hover:bg-sky-100 hover:border-sky-300 text-xs text-sky-700 font-medium shadow-sm transition-colors">
+                            <i class="fas fa-store mr-1"></i> Cabang 1<br><span class="text-[9px] font-normal text-gray-500">(Muammar)</span>
+                        </button>
+                        <button onclick="applyPreset(2)" class="px-3 py-2 bg-white border border-sky-200 rounded hover:bg-sky-100 hover:border-sky-300 text-xs text-sky-700 font-medium shadow-sm transition-colors">
+                            <i class="fas fa-store-alt mr-1"></i> Cabang 2<br><span class="text-[9px] font-normal text-gray-500">(Husni)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <hr class="border-gray-100">
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Nama Toko</label>
+                    <input type="text" id="set-name" class="w-full p-2 border rounded text-sm" placeholder="Contoh: MAJU JAYA CELL">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Alamat Toko</label>
+                    <input type="text" id="set-address" class="w-full p-2 border rounded text-sm" placeholder="Contoh: Jl. Mawar No. 1">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Kontak / WA</label>
+                    <input type="text" id="set-contact" class="w-full p-2 border rounded text-sm" placeholder="Contoh: 081234567890">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Link (URL) Logo Toko</label>
+                    <input type="text" id="set-logo" class="w-full p-2 border rounded text-sm" placeholder="https://...">
+                    <p class="text-[10px] text-gray-400 mt-1">Upload logo Anda ke postimages.org atau imgur.com lalu tempel link-nya di sini.</p>
+                </div>
+            </div>
+            <div class="p-4 border-t bg-gray-50 text-right">
+                <button onclick="saveSettings()" class="px-4 py-2 bg-sky-600 text-white rounded-lg text-sm font-bold hover:bg-sky-700">Simpan & Terapkan</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Receipt Modal -->
     <div id="receipt-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 no-print backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-[380px] overflow-hidden flex flex-col max-h-[95vh] relative">
@@ -255,13 +310,18 @@
                 <div id="receipt-area" class="bg-white p-6 shadow-lg w-[80mm] text-xs leading-relaxed font-sans text-gray-800 relative rounded-sm">
                     
                     <!-- Store Header -->
-                    <div class="flex flex-col items-center justify-center mb-4">
-                        <div class="w-10 h-10 bg-sky-600 text-white rounded-lg flex items-center justify-center text-xl mb-2">
-                            <i class="fas fa-bolt"></i>
+                    <div class="flex flex-col items-center justify-center mb-4 text-center">
+                        <!-- Logo Container -->
+                        <div id="receipt-logo-container" class="mb-2">
+                            <!-- Default Icon (will be replaced if logo exists) -->
+                            <div class="w-10 h-10 bg-sky-600 text-white rounded-lg flex items-center justify-center text-xl mx-auto">
+                                <i class="fas fa-bolt"></i>
+                            </div>
                         </div>
-                        <h2 class="text-sm font-bold uppercase tracking-wide text-gray-900">KUOTA MURAH</h2>
-                        <p class="text-[10px] text-gray-500 mt-0.5">Muammar Khadafi</p>
-                        <p class="text-[10px] text-gray-500">WA: 0851-5689-6021</p>
+                        
+                        <h2 class="text-sm font-bold uppercase tracking-wide text-gray-900" id="receipt-store-name">KONTER CELL</h2>
+                        <p class="text-[10px] text-gray-500 mt-0.5" id="receipt-store-address">Jl. Mawar No. 12, Jakarta</p>
+                        <p class="text-[10px] text-gray-500" id="receipt-store-contact">WA: 0812-3456-7890</p>
                     </div>
                     
                     <!-- Divider -->
@@ -326,7 +386,7 @@
 
                     <!-- Footer -->
                     <div class="text-center mt-6">
-                        <p class="text-[10px] text-gray-500 font-medium">Terima kasih</p>
+                        <p class="text-[10px] text-gray-500 font-medium">Terima kasih atas kunjungan Anda!</p>
                         <p class="text-[9px] text-gray-400 mt-1">Simpan struk ini sebagai bukti pembayaran.</p>
                         
                         <!-- Fake QR Code Style -->
@@ -348,7 +408,7 @@
             <!-- Action Buttons -->
             <div class="p-4 border-t bg-white flex gap-2 z-10">
                  <button onclick="downloadReceipt()" class="flex-1 py-3 px-4 bg-white border border-green-600 text-green-600 rounded-xl hover:bg-green-50 font-bold shadow-sm flex justify-center items-center gap-2 transition-transform active:scale-95">
-                    <i class="fas fa-download"></i> Download
+                    <i class="fas fa-download"></i> Download JPG
                 </button>
                 <button onclick="window.print()" class="flex-1 py-3 px-4 bg-sky-600 text-white rounded-xl hover:bg-sky-700 font-bold shadow-lg shadow-sky-200 flex justify-center items-center gap-2 transition-transform active:scale-95">
                     <i class="fas fa-print"></i> Cetak
@@ -366,11 +426,35 @@
             filteredProducts: [],
             categories: new Set(),
             currentCategory: 'all',
-            csvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTxOO2lwk4qENZ8dFO_3Stl0gmDqnAYHfE2g0dE-LKEJqTtiWT3J5IS4fWVZAWzVlHE8yNXUAFJbgD0/pub?gid=0&single=true&output=csv'
+            csvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTxOO2lwk4qENZ8dFO_3Stl0gmDqnAYHfE2g0dE-LKEJqTtiWT3J5IS4fWVZAWzVlHE8yNXUAFJbgD0/pub?gid=0&single=true&output=csv',
+            // DEFAULT PRESET 1 (Muammar)
+            storeProfile: {
+                name: 'KUOTA MURAH',
+                address: 'Muammar Khadafi',
+                contact: '0851-5689-6021',
+                logo: 'https://i.postimg.cc/90v3qnsY/IMG-20251116-WA0004(1).jpg'
+            }
+        };
+
+        // --- PRESET DATA ---
+        const STORE_PRESETS = {
+            1: {
+                name: 'KUOTA MURAH',
+                address: 'Muammar Khadafi',
+                contact: '0851-5689-6021',
+                logo: 'https://i.postimg.cc/90v3qnsY/IMG-20251116-WA0004(1).jpg'
+            },
+            2: {
+                name: 'KUOTA MURAH',
+                address: 'Husni Mubarok',
+                contact: '0816-4696-6661',
+                logo: 'https://i.postimg.cc/90v3qnsY/IMG-20251116-WA0004(1).jpg'
+            }
         };
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
             fetchData();
             setupEventListeners();
             
@@ -384,6 +468,54 @@
                 }
             });
         });
+
+        // --- Settings Logic ---
+        function loadSettings() {
+            const saved = localStorage.getItem('storeProfile');
+            if(saved) {
+                STATE.storeProfile = JSON.parse(saved);
+            }
+            // Update UI navbar name
+            document.getElementById('nav-store-name').innerText = STATE.storeProfile.name;
+        }
+
+        function openSettings() {
+            document.getElementById('set-name').value = STATE.storeProfile.name;
+            document.getElementById('set-address').value = STATE.storeProfile.address;
+            document.getElementById('set-contact').value = STATE.storeProfile.contact;
+            document.getElementById('set-logo').value = STATE.storeProfile.logo || '';
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function applyPreset(id) {
+            const preset = STORE_PRESETS[id];
+            if(preset) {
+                document.getElementById('set-name').value = preset.name;
+                document.getElementById('set-address').value = preset.address;
+                document.getElementById('set-contact').value = preset.contact;
+                document.getElementById('set-logo').value = preset.logo;
+                
+                // Visual feedback
+                alert(`Data ${preset.address} diterapkan ke form. Klik Simpan untuk mengonfirmasi.`);
+            }
+        }
+
+        function saveSettings() {
+            STATE.storeProfile.name = document.getElementById('set-name').value || 'KUOTA MURAH';
+            STATE.storeProfile.address = document.getElementById('set-address').value || '-';
+            STATE.storeProfile.contact = document.getElementById('set-contact').value || '-';
+            STATE.storeProfile.logo = document.getElementById('set-logo').value;
+
+            localStorage.setItem('storeProfile', JSON.stringify(STATE.storeProfile));
+            document.getElementById('nav-store-name').innerText = STATE.storeProfile.name;
+            
+            closeSettings();
+            // Optional: alert('Pengaturan disimpan!'); 
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
 
         // --- Data Fetching & Parsing ---
         async function fetchData() {
@@ -818,6 +950,19 @@
                 alert('Uang pembayaran kurang!');
                 document.getElementById('cash-input').focus();
                 return;
+            }
+
+            // Update Store Info from STATE
+            document.getElementById('receipt-store-name').innerText = STATE.storeProfile.name;
+            document.getElementById('receipt-store-address').innerText = STATE.storeProfile.address;
+            document.getElementById('receipt-store-contact').innerText = STATE.storeProfile.contact;
+
+            // Update Logo
+            const logoContainer = document.getElementById('receipt-logo-container');
+            if (STATE.storeProfile.logo && STATE.storeProfile.logo.startsWith('http')) {
+                logoContainer.innerHTML = `<img src="${STATE.storeProfile.logo}" alt="Logo" class="h-16 mx-auto object-contain">`;
+            } else {
+                logoContainer.innerHTML = `<div class="w-10 h-10 bg-sky-600 text-white rounded-lg flex items-center justify-center text-xl mx-auto"><i class="fas fa-bolt"></i></div>`;
             }
 
             // Populate Receipt
