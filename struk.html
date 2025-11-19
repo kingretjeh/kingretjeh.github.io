@@ -185,7 +185,7 @@
                     <!-- Right Column: Form & Payment -->
                     <div class="flex-1 p-4 md:p-0 bg-sky-50/30 md:bg-transparent rounded-lg">
                         <!-- Input No HP -->
-                        <div class="mb-5">
+                        <div class="mb-3">
                             <label class="text-xs font-bold text-sky-700 block mb-1.5 uppercase tracking-wider">
                                 <i class="fas fa-phone-alt mr-1"></i> No. HP Pelanggan
                             </label>
@@ -193,12 +193,21 @@
                         </div>
 
                         <div class="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                            <div class="flex justify-between items-center text-gray-600">
+                            <!-- Fee Input -->
+                            <div>
+                                <label class="text-xs text-gray-500 block mb-1.5">Biaya Admin / Fee (Rp)</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-bold">Rp</span>
+                                    <input type="number" id="fee-input" class="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-sm outline-none focus:border-sky-500 font-mono shadow-sm" placeholder="0">
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center text-gray-600 pt-2 border-t border-dashed border-gray-300">
                                 <span class="text-sm font-medium">Total Tagihan</span>
                                 <span class="font-bold text-gray-800 text-lg" id="cart-total">Rp 0</span>
                             </div>
                             
-                            <div class="pt-3 border-t border-gray-200">
+                            <div class="pt-2 border-t border-gray-200">
                                 <label class="text-xs text-gray-500 block mb-1.5">Uang Diterima (Rp)</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-bold">Rp</span>
@@ -266,7 +275,6 @@
                         </div>
                         <div class="flex flex-col text-right">
                             <span>ID: <span id="receipt-no" class="font-mono text-gray-700">#0001</span></span>
-                            <span>Kasir: Admin</span>
                         </div>
                     </div>
 
@@ -295,7 +303,7 @@
                         </div>
                          <div class="flex justify-between text-[10px] text-gray-600">
                             <span>Biaya Admin</span>
-                            <span class="font-medium">Rp 0</span>
+                            <span id="receipt-fee" class="font-medium">Rp 0</span>
                         </div>
                         
                         <div class="flex justify-between items-center pt-2 mt-2 border-t border-gray-200">
@@ -731,21 +739,25 @@
                 STATE.cart = [];
                 document.getElementById('customer-phone').value = '';
                 document.getElementById('cash-input').value = '';
+                document.getElementById('fee-input').value = ''; // Clear fee
                 renderCart();
             }
         }
 
         function updateTotals() {
-            const total = STATE.cart.reduce((sum, item) => sum + item.price, 0); 
+            const cartTotal = STATE.cart.reduce((sum, item) => sum + item.price, 0); 
+            const fee = parseInt(document.getElementById('fee-input').value) || 0;
+            const grandTotal = cartTotal + fee;
+            
             const count = STATE.cart.length;
 
-            document.getElementById('cart-total').innerText = formatRupiah(total);
+            document.getElementById('cart-total').innerText = formatRupiah(grandTotal);
             document.getElementById('cart-count-badge').innerText = count;
 
             calculateChange();
 
             const btn = document.getElementById('btn-checkout');
-            if (total > 0) {
+            if (grandTotal > 0) {
                 btn.disabled = false;
                 btn.classList.remove('bg-gray-300', 'cursor-not-allowed');
                 btn.classList.add('bg-sky-600', 'hover:bg-sky-700');
@@ -757,9 +769,12 @@
         }
 
         function calculateChange() {
-            const total = STATE.cart.reduce((sum, item) => sum + item.price, 0);
+            const cartTotal = STATE.cart.reduce((sum, item) => sum + item.price, 0);
+            const fee = parseInt(document.getElementById('fee-input').value) || 0;
+            const grandTotal = cartTotal + fee;
+            
             const cash = parseInt(document.getElementById('cash-input').value) || 0;
-            const change = cash - total;
+            const change = cash - grandTotal;
             
             const changeEl = document.getElementById('change-display');
             if(change >= 0) {
@@ -781,11 +796,15 @@
             // Desktop & Mobile top search (filters the list logic)
             // Dropdown internal search is handled in renderProducts
             document.getElementById('cash-input').addEventListener('input', calculateChange);
+            document.getElementById('fee-input').addEventListener('input', updateTotals); // Listener for fee
         }
 
         // --- Receipt Logic ---
         function processCheckout() {
-            const total = STATE.cart.reduce((sum, item) => sum + item.price, 0);
+            const cartTotal = STATE.cart.reduce((sum, item) => sum + item.price, 0);
+            const fee = parseInt(document.getElementById('fee-input').value) || 0;
+            const grandTotal = cartTotal + fee;
+            
             const cash = parseInt(document.getElementById('cash-input').value) || 0;
             const phone = document.getElementById('customer-phone').value;
 
@@ -795,7 +814,7 @@
                 return;
             }
 
-            if (cash < total) {
+            if (cash < grandTotal) {
                 alert('Uang pembayaran kurang!');
                 document.getElementById('cash-input').focus();
                 return;
@@ -821,10 +840,11 @@
                 listContainer.appendChild(row);
             });
 
-            document.getElementById('receipt-subtotal').innerText = formatRupiah(total);
-            document.getElementById('receipt-total').innerText = formatRupiah(total);
+            document.getElementById('receipt-subtotal').innerText = formatRupiah(cartTotal);
+            document.getElementById('receipt-fee').innerText = formatRupiah(fee); // Show fee
+            document.getElementById('receipt-total').innerText = formatRupiah(grandTotal);
             document.getElementById('receipt-cash').innerText = formatRupiah(cash);
-            document.getElementById('receipt-change').innerText = formatRupiah(cash - total);
+            document.getElementById('receipt-change').innerText = formatRupiah(cash - grandTotal);
 
             document.getElementById('receipt-modal').classList.remove('hidden');
         }
@@ -834,6 +854,7 @@
              if(confirm("Transaksi selesai. Reset form?")) {
                  STATE.cart = [];
                  document.getElementById('cash-input').value = '';
+                 document.getElementById('fee-input').value = '';
                  document.getElementById('customer-phone').value = '';
                  renderCart();
                  // Reset dropdown label
